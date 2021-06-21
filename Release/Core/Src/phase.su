@@ -1,0 +1,4 @@
+phase.c:43:10:note_to_freq	0	static
+phase.c:47:10:calculate_delta	0	static
+phase.c:54:10:update_phase	0	static
+phase.c:58:9:get_sample	0	static

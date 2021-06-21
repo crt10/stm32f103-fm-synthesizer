@@ -1,0 +1,2 @@
+phase.c:10:10:note_to_freq	16	static
+phase.c:14:10:calculate_delta	24	static
