@@ -1,6 +1,5 @@
-phase.h:50:24:update_phase	16	static
-phase.h:51:23:get_sample	16	static
-synth.c:10:6:init_synth	24	static
-synth.c:21:6:add_voice	32	static
-synth.c:37:6:delete_voice	24	static
-synth.c:49:10:synth_sample	16	static
+synth.c:10:6:init_synth	176	static
+synth.c:21:6:add_voice	64	static
+synth.c:45:6:delete_voice	0	static
+synth.c:67:10:modulate	16	static
+synth.c:57:10:synth_sample	16	static

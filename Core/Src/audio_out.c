@@ -14,8 +14,8 @@ void init_audio_out(TIM_HandleTypeDef *htim) {
 
 void update_volume(TIM_HandleTypeDef *htim) {
 	uint16_t output_volume = synth_sample();
-	if (output_volume >= (uint16_t)1023) {
-		__NOP();
-	}
+//	if (output_volume >= (uint16_t)1023) {
+//		__NOP();
+//	}
 	__HAL_TIM_SET_COMPARE(htim, TIM_CHANNEL_1, output_volume);
 }

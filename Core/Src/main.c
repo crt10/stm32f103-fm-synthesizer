@@ -276,6 +276,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
 	if (htim == audio_pwm) {
+		HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_8);
 		update_volume(htim);
 	}
 }
