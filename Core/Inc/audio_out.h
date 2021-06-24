@@ -13,8 +13,8 @@
 
 #define BUFFER_SIZE 128
 
-void init_audio_out(TIM_HandleTypeDef *htim);
-void update_volume(TIM_HandleTypeDef *htim);
+void init_audio_out(SPI_HandleTypeDef* hspi, TIM_HandleTypeDef* htim);
+void update_volume(SPI_HandleTypeDef* hspi);
 
 
 #endif /* INC_AUDIO_OUT_H_ */

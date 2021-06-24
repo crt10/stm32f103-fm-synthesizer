@@ -1,9 +1,9 @@
 midi.c:10:6:init_midi	4	static
 midi.c:16:6:process_midi_byte	8	static,ignoring_inline_asm
-midi.c:92:6:note_off	0	static
-midi.c:96:6:note_on	0	static
-midi.c:100:6:polyphonic_pressure	0	static
-midi.c:104:6:control_change	0	static
-midi.c:108:6:program_change	0	static
-midi.c:112:6:channel_pressure	0	static
-midi.c:116:6:pitch_bend	0	static
+midi.c:91:6:note_off	0	static
+midi.c:95:6:note_on	0	static
+midi.c:99:6:polyphonic_pressure	0	static
+midi.c:103:6:control_change	0	static
+midi.c:107:6:program_change	0	static
+midi.c:111:6:channel_pressure	0	static
+midi.c:115:6:pitch_bend	0	static

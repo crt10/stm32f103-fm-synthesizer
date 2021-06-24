@@ -10,7 +10,7 @@
 
 #include "stm32f1xx_hal.h"
 
-#define SAMPLING_FREQ 62500
+#define SAMPLING_FREQ 48000
 #define TABLE_SAMPLE_SIZE 256
 
 static const uint16_t NOTE_FREQ_TABLE [128] = {
