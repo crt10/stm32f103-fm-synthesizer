@@ -27,7 +27,7 @@ typedef struct OPERATOR {
 
 OPERATOR op[MAX_OPERATORS][MAX_VOICES];
 uint8_t op_amp[MAX_OPERATORS];	//operator amplitude
-uint8_t op_mul[MAX_OPERATORS];	//operator pitch (frequency) multiplier
+uint8_t op_ratio[MAX_OPERATORS];	//operator pitch (frequency) multiplier
 uint8_t algo;
 
 void init_synth();

@@ -1,5 +1,5 @@
 synth.c:10:6:init_synth	176	static
-synth.c:21:6:add_voice	64	static
-synth.c:45:6:delete_voice	0	static
-synth.c:67:10:modulate	20	static
-synth.c:57:10:synth_sample	16	static
+synth.c:21:6:add_voice	32	static
+synth.c:49:6:delete_voice	0	static
+synth.c:71:10:modulate	16	static
+synth.c:61:10:synth_sample	16	static
