@@ -301,16 +301,13 @@ static void MX_GPIO_Init(void)
 
 /* USER CODE BEGIN 4 */
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
-	if (huart == midi_uart) {
-		process_midi_byte(huart);
-	}
+	process_midi_byte(huart);
 }
 
-void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
-	if (htim == audio_tim) {
-		HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_8);
-		update_volume(audio_spi);
-	}
+void sample() {
+	TIM2->SR = 0;
+	HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_8);
+	update_volume(audio_spi);
 }
 
 /* USER CODE END 4 */
