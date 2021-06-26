@@ -33,7 +33,7 @@ uint8_t algo;
 void init_synth();
 void add_voice(uint8_t note_value);
 void delete_voice(uint8_t note_value);
-uint16_t synth_sample();
-uint16_t modulate(uint8_t voice_index);
+int16_t synth_sample();
+int16_t modulate(uint8_t voice_index);
 
 #endif /* INC_SYNTH_H_ */

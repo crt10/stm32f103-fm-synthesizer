@@ -58,8 +58,8 @@ void delete_voice(uint8_t note_value) {
 //	}
 }
 
-uint16_t synth_sample() {
-	uint16_t output_volume = 0;
+int16_t synth_sample() {
+	int16_t output_volume = 0x0800;
 	for (uint8_t voice_index = 0; voice_index < MAX_VOICES; voice_index++) {	//loop through all voices
 		if (op[0][voice_index].note_value != (uint8_t)-1) {							//if the voice is active
 			output_volume += modulate(voice_index);
@@ -68,7 +68,7 @@ uint16_t synth_sample() {
 	return output_volume;
 }
 
-uint16_t modulate(uint8_t voice_index) {
+int16_t modulate(uint8_t voice_index) {
 	OPERATOR* operators[MAX_OPERATORS];											//pointer to all active operators
 	for (uint8_t op_index = 0; op_index < MAX_OPERATORS; op_index++) {			//loop through all operators of voice
 		OPERATOR* operator =  &op[op_index][voice_index];							//create pointer to active operators
@@ -77,91 +77,91 @@ uint16_t modulate(uint8_t voice_index) {
 	}
 
 	switch (algo) {
-	uint8_t op3, op2, op1, op0;
+	int8_t op3, op2, op1, op0;
 	default:
 	case 0x00:
 		op3 = (int16_t)get_mod_sample(operators[3]->phase >> 8)*op_amp[3] >> 8;
 		op2 = (int16_t)get_mod_sample((operators[2]->phase >> 8) + op3)*op_amp[2] >> 8;
 		op1 = (int16_t)get_mod_sample((operators[1]->phase >> 8) + op2)*op_amp[1] >> 8;
-		op0 = (uint16_t)get_sample((operators[0]->phase >> 8) + op1)*op_amp[0] >> 8;
+		op0 = (int16_t)get_sample((operators[0]->phase >> 8) + op1)*op_amp[0] >> 8;
 		return op0;
 		break;
 	case 0x01:
 		op3 = (int16_t)get_mod_sample(operators[3]->phase >> 8)*op_amp[3] >> 8;
 		op2 = (int16_t)get_mod_sample(operators[2]->phase >> 8)*op_amp[2] >> 8;
 		op1 = (int16_t)get_mod_sample((operators[1]->phase >> 8) + op3 + op2)*op_amp[1] >> 8;
-		op0 = (uint16_t)get_sample((operators[0]->phase >> 8) + op1)*op_amp[0] >> 8;
+		op0 = (int16_t)get_sample((operators[0]->phase >> 8) + op1)*op_amp[0] >> 8;
 		return op0;
 		break;
 	case 0x02:
 		op3 = (int16_t)get_mod_sample(operators[3]->phase >> 8)*op_amp[3] >> 8;
 		op2 = (int16_t)get_mod_sample(operators[2]->phase >> 8)*op_amp[2] >> 8;
 		op1 = (int16_t)get_mod_sample((operators[1]->phase >> 8) + op2)*op_amp[1] >> 8;
-		op0 = (uint16_t)get_sample((operators[0]->phase >> 8) + op3 + op1)*op_amp[0] >> 8;
+		op0 = (int16_t)get_sample((operators[0]->phase >> 8) + op3 + op1)*op_amp[0] >> 8;
 		return op0;
 		break;
 	case 0x03:
 		op3 = (int16_t)get_mod_sample(operators[3]->phase >> 8)*op_amp[3] >> 8;
 		op2 = (int16_t)get_mod_sample((operators[2]->phase >> 8) + op3)*op_amp[2] >> 8;
 		op1 = (int16_t)get_mod_sample((operators[1]->phase >> 8) + op3)*op_amp[1] >> 8;
-		op0 = (uint16_t)get_sample((operators[0]->phase >> 8) + op2 + op1)*op_amp[0] >> 8;
+		op0 = (int16_t)get_sample((operators[0]->phase >> 8) + op2 + op1)*op_amp[0] >> 8;
 		return op0;
 		break;
 	case 0x04:
 		op3 = (int16_t)get_mod_sample(operators[3]->phase >> 8)*op_amp[3] >> 8;
 		op2 = (int16_t)get_mod_sample(operators[2]->phase >> 8)*op_amp[2] >> 8;
 		op1 = (int16_t)get_mod_sample(operators[1]->phase >> 8)*op_amp[1] >> 8;
-		op0 = (uint16_t)get_sample((operators[0]->phase >> 8) + op3 + op2 + op1)*op_amp[0] >> 8;
+		op0 = (int16_t)get_sample((operators[0]->phase >> 8) + op3 + op2 + op1)*op_amp[0] >> 8;
 		return op0;
 		break;
 	case 0x05:
 		op3 = (int16_t)get_mod_sample(operators[3]->phase >> 8)*op_amp[3] >> 8;
 		op2 = (int16_t)get_mod_sample((operators[2]->phase >> 8) + op3)*op_amp[2] >> 8;
-		op1 = (uint16_t)get_sample((operators[1]->phase >> 8) + op2)*op_amp[1] >> 8;
-		op0 = (uint16_t)get_sample(operators[0]->phase >> 8)*op_amp[0] >> 8;
-		return ((uint16_t)op1 + op0) >> 1;
+		op1 = (int16_t)get_sample((operators[1]->phase >> 8) + op2)*op_amp[1] >> 8;
+		op0 = (int16_t)get_sample(operators[0]->phase >> 8)*op_amp[0] >> 8;
+		return ((int16_t)op1 + op0) >> 1;
 		break;
 	case 0x06:
 		op3 = (int16_t)get_mod_sample(operators[3]->phase >> 8)*op_amp[3] >> 8;
 		op2 = (int16_t)get_mod_sample((operators[2]->phase >> 8) + op3)*op_amp[2] >> 8;
-		op1 = (uint16_t)get_sample((operators[1]->phase >> 8) + op2)*op_amp[1] >> 8;
-		op0 = (uint16_t)get_sample((operators[0]->phase >> 8) + op2)*op_amp[0] >> 8;
-		return ((uint16_t)op1 + op0) >> 1;
+		op1 = (int16_t)get_sample((operators[1]->phase >> 8) + op2)*op_amp[1] >> 8;
+		op0 = (int16_t)get_sample((operators[0]->phase >> 8) + op2)*op_amp[0] >> 8;
+		return ((int16_t)op1 + op0) >> 1;
 		break;
 	case 0x07:
 		op3 = (int16_t)get_mod_sample(operators[3]->phase >> 8)*op_amp[3] >> 8;
-		op2 = (uint16_t)get_sample((operators[2]->phase >> 8) + op3)*op_amp[2] >> 8;
+		op2 = (int16_t)get_sample((operators[2]->phase >> 8) + op3)*op_amp[2] >> 8;
 		op1 = (int16_t)get_mod_sample(operators[1]->phase >> 8)*op_amp[1] >> 8;
-		op0 = (uint16_t)get_sample((operators[0]->phase >> 8) + op1)*op_amp[0] >> 8;
-		return ((uint16_t)op2 + op0) >> 1;
+		op0 = (int16_t)get_sample((operators[0]->phase >> 8) + op1)*op_amp[0] >> 8;
+		return ((int16_t)op2 + op0) >> 1;
 		break;
 	case 0x08:
 		op3 = (int16_t)get_mod_sample(operators[3]->phase >> 8)*op_amp[3] >> 8;
-		op2 = (uint16_t)get_sample((operators[2]->phase >> 8) + op3)*op_amp[2] >> 8;
-		op1 = (uint16_t)get_sample((operators[1]->phase >> 8) + op3)*op_amp[1] >> 8;
-		op0 = (uint16_t)get_sample((operators[0]->phase >> 8) + op3)*op_amp[0] >> 8;
-		return ((uint16_t)op2 + op1 + op0) / 3;
+		op2 = (int16_t)get_sample((operators[2]->phase >> 8) + op3)*op_amp[2] >> 8;
+		op1 = (int16_t)get_sample((operators[1]->phase >> 8) + op3)*op_amp[1] >> 8;
+		op0 = (int16_t)get_sample((operators[0]->phase >> 8) + op3)*op_amp[0] >> 8;
+		return ((int16_t)op2 + op1 + op0) / 3;
 		break;
 	case 0x09:
 		op3 = (int16_t)get_mod_sample(operators[3]->phase >> 8)*op_amp[3] >> 8;
-		op2 = (uint16_t)get_sample((operators[2]->phase >> 8) + op3)*op_amp[2] >> 8;
-		op1 = (uint16_t)get_sample((operators[1]->phase >> 8) + op3)*op_amp[1] >> 8;
-		op0 = (uint16_t)get_sample(operators[0]->phase >> 8)*op_amp[0] >> 8;
-		return ((uint16_t)op2 + op1 + op0) / 3;
+		op2 = (int16_t)get_sample((operators[2]->phase >> 8) + op3)*op_amp[2] >> 8;
+		op1 = (int16_t)get_sample((operators[1]->phase >> 8) + op3)*op_amp[1] >> 8;
+		op0 = (int16_t)get_sample(operators[0]->phase >> 8)*op_amp[0] >> 8;
+		return ((int16_t)op2 + op1 + op0) / 3;
 		break;
 	case 0x0A:
 		op3 = (int16_t)get_mod_sample(operators[3]->phase >> 8)*op_amp[3] >> 8;
-		op2 = (uint16_t)get_sample((operators[2]->phase >> 8) + op3)*op_amp[2] >> 8;
-		op1 = (uint16_t)get_sample(operators[1]->phase >> 8)*op_amp[1] >> 8;
-		op0 = (uint16_t)get_sample(operators[0]->phase >> 8)*op_amp[0] >> 8;
-		return ((uint16_t)op2 + op1 + op0) / 3;
+		op2 = (int16_t)get_sample((operators[2]->phase >> 8) + op3)*op_amp[2] >> 8;
+		op1 = (int16_t)get_sample(operators[1]->phase >> 8)*op_amp[1] >> 8;
+		op0 = (int16_t)get_sample(operators[0]->phase >> 8)*op_amp[0] >> 8;
+		return ((int16_t)op2 + op1 + op0) / 3;
 		break;
 	case 0x0B:
-		op3 = (uint16_t)get_sample(operators[3]->phase >> 8)*op_amp[3] >> 8;
-		op2 = (uint16_t)get_sample(operators[2]->phase >> 8)*op_amp[2] >> 8;
-		op1 = (uint16_t)get_sample(operators[1]->phase >> 8)*op_amp[1] >> 8;
-		op0 = (uint16_t)get_sample(operators[0]->phase >> 8)*op_amp[0] >> 8;
-		return ((uint16_t)op3 + op2 + op1 + op0) >> 2;
+		op3 = (int16_t)get_sample(operators[3]->phase >> 8)*op_amp[3] >> 8;
+		op2 = (int16_t)get_sample(operators[2]->phase >> 8)*op_amp[2] >> 8;
+		op1 = (int16_t)get_sample(operators[1]->phase >> 8)*op_amp[1] >> 8;
+		op0 = (int16_t)get_sample(operators[0]->phase >> 8)*op_amp[0] >> 8;
+		return ((int16_t)op3 + op2 + op1 + op0) >> 2;
 		break;
 	}
 	return 0;
