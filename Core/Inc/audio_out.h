@@ -11,10 +11,11 @@
 #include "stm32f1xx_hal.h"
 #include "synth.h"
 
-#define BUFFER_SIZE 128
+uint16_t output_volume;
 
 void init_audio_out(SPI_HandleTypeDef* hspi, TIM_HandleTypeDef* htim);
-void update_volume(SPI_HandleTypeDef* hspi);
+void dma_volume_out();
+void update_volume();
 
 
 #endif /* INC_AUDIO_OUT_H_ */
