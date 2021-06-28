@@ -44,7 +44,6 @@
 
 /* Private variables ---------------------------------------------------------*/
 SPI_HandleTypeDef hspi1;
-DMA_HandleTypeDef hdma_spi1_tx;
 
 TIM_HandleTypeDef htim2;
 
@@ -52,7 +51,6 @@ UART_HandleTypeDef huart1;
 
 /* USER CODE BEGIN PV */
 SPI_HandleTypeDef* audio_spi = &hspi1;
-DMA_HandleTypeDef* audio_dma = &hdma_spi1_tx;
 TIM_HandleTypeDef* audio_tim = &htim2;
 UART_HandleTypeDef* midi_uart = &huart1;
 /* USER CODE END PV */
@@ -60,7 +58,6 @@ UART_HandleTypeDef* midi_uart = &huart1;
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
-static void MX_DMA_Init(void);
 static void MX_USART1_UART_Init(void);
 static void MX_TIM2_Init(void);
 static void MX_SPI1_Init(void);
@@ -101,7 +98,6 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-  MX_DMA_Init();
   MX_USART1_UART_Init();
   MX_TIM2_Init();
   MX_SPI1_Init();
@@ -277,22 +273,6 @@ static void MX_USART1_UART_Init(void)
 }
 
 /**
-  * Enable DMA controller clock
-  */
-static void MX_DMA_Init(void)
-{
-
-  /* DMA controller clock enable */
-  __HAL_RCC_DMA1_CLK_ENABLE();
-
-  /* DMA interrupt init */
-  /* DMA1_Channel3_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(DMA1_Channel3_IRQn, 0, 0);
-  HAL_NVIC_EnableIRQ(DMA1_Channel3_IRQn);
-
-}
-
-/**
   * @brief GPIO Initialization Function
   * @param None
   * @retval None
@@ -328,14 +308,6 @@ void sample() {
 	TIM2->SR = 0;
 	HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_8);
 	update_volume();
-}
-
-void volume_out_post() {
-	DMA1->IFCR = DMA_IFCR_CTCIF3;						//clear DMA transfer complete flag
-	while (SPI1->SR & SPI_SR_BSY);						//wait until SPI transfer is complete
-	DMA1_Channel3->CCR &= ~DMA_CCR_EN;					//disable DMA channel 3
-	SPI1->CR2 &= ~SPI_CR2_TXDMAEN;						//disable SPI DMA transfer
-	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);	//pull CS high
 }
 
 /* USER CODE END 4 */

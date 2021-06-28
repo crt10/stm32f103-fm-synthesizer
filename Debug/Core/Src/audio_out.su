@@ -1,3 +1,2 @@
-audio_out.c:10:6:init_audio_out	16	static
-audio_out.c:19:6:dma_volume_out	8	static
-audio_out.c:26:6:update_volume	8	static
+audio_out.c:10:6:init_audio_out	8	static
+audio_out.c:16:6:update_volume	8	static

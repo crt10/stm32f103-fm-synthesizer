@@ -55,7 +55,6 @@ void Error_Handler(void);
 
 /* USER CODE BEGIN EFP */
 void sample();
-void volume_out_post();
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
