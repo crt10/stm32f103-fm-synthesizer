@@ -12,8 +12,8 @@
 void init_synth() {
 	for (uint8_t i = 0; i < MAX_OPERATORS; i++) {
 		algo = 0x00;								//default algorithm 0
-		op_amp[i] = 0xFF;							//default amplitude 255
-		op_ratio[i] = 0x01;							//default multiplier 1
+		op_amp[i] = 0x80;							//default amplitude 128
+		op_ratio[i] = 0x10;							//default multiplier 1.0 (4 MSB integer, 4 LSB decimal)
 		for (uint8_t o = 0; o < MAX_VOICES; o++) {
 			op[i][o] = (OPERATOR) {-1, -1, -1, -1};
 		}
@@ -36,15 +36,15 @@ void add_voice(uint8_t note_value) {
 		return;
 	}
 	for (uint8_t op_index = 0; op_index < MAX_OPERATORS; op_index++) {
-		op[op_index][voice_index].note_value = note_value;								//store note
-		op[op_index][voice_index].freq = op_ratio[op_index] * note_to_freq(note_value);	//store frequency
+		op[op_index][voice_index].note_value = note_value;										//store note
+		op[op_index][voice_index].phase = 0;													//reset the phase (wave table index)
+		op[op_index][voice_index].freq = (op_ratio[op_index] * note_to_freq(note_value)) >> 4;	//calculate and store frequency (>> 4 for integer)
 		if (op_index != 0)	{
-			op[op_index][voice_index].delta = op_ratio[op_index] * op[0][voice_index].delta;//multiply delta based off of ratio of carrier
+			op[op_index][voice_index].delta = (op_ratio[op_index] * op[0][voice_index].delta) >> 4;		//multiply delta based off of ratio of carrier
 		}
 		else {
-			op[op_index][voice_index].delta = calculate_delta(op[0][voice_index].freq);						//calculate and store delta
+			op[op_index][voice_index].delta = calculate_delta(op[0][voice_index].freq);				//calculate and store delta
 		}
-		op[op_index][voice_index].phase = 0;											//reset the phase (wave table index)
 	}
 }
 

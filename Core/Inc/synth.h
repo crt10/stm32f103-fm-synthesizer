@@ -10,6 +10,7 @@
 
 #include "stm32f1xx_hal.h"
 #include "phase.h"
+#include "envelope.h"
 
 #define MAX_OPERATORS 4
 #define MAX_VOICES 16
@@ -23,11 +24,13 @@ typedef struct OPERATOR {
 	uint16_t phase;				//current fractional value index in the wave table
 
 	//ENVELOPE
+	ADSR_STATES adsr_state;
+
 } OPERATOR;
 
 OPERATOR op[MAX_OPERATORS][MAX_VOICES];
-uint8_t op_amp[MAX_OPERATORS];	//operator amplitude
-uint8_t op_ratio[MAX_OPERATORS];	//operator pitch (frequency) multiplier
+uint8_t op_amp[MAX_OPERATORS];			//operator amplitude
+uint8_t op_ratio[MAX_OPERATORS];		//operator pitch (frequency) multiplier
 uint8_t algo;
 
 void init_synth();
@@ -44,87 +47,87 @@ static inline int16_t modulate(uint8_t voice_index) {
 	switch (algo) {
 	int8_t op3, op2, op1, op0;
 	case 0x00:
-		op3 = (int16_t)get_mod_sample(op[3][voice_index].phase >> 8)*op_amp[3] >> 8;
-		op2 = (int16_t)get_mod_sample((op[2][voice_index].phase >> 8) + op3)*op_amp[2] >> 8;
-		op1 = (int16_t)get_mod_sample((op[1][voice_index].phase >> 8) + op2)*op_amp[1] >> 8;
-		op0 = (int16_t)get_sample((op[0][voice_index].phase >> 8) + op1)*op_amp[0] >> 8;
+		op3 = (int16_t)get_mod_sample(op[3][voice_index].phase >> 8)*op_amp[3] >> 7;
+		op2 = (int16_t)get_mod_sample((op[2][voice_index].phase >> 8) + op3)*op_amp[2] >> 7;
+		op1 = (int16_t)get_mod_sample((op[1][voice_index].phase >> 8) + op2)*op_amp[1] >> 7;
+		op0 = (int16_t)get_sample((op[0][voice_index].phase >> 8) + op1)*op_amp[0] >> 7;
 		return op0;
 		break;
 	case 0x01:
-		op3 = (int16_t)get_mod_sample(op[3][voice_index].phase >> 8)*op_amp[3] >> 8;
-		op2 = (int16_t)get_mod_sample(op[2][voice_index].phase >> 8)*op_amp[2] >> 8;
-		op1 = (int16_t)get_mod_sample((op[1][voice_index].phase >> 8) + op3 + op2)*op_amp[1] >> 8;
-		op0 = (int16_t)get_sample((op[0][voice_index].phase >> 8) + op1)*op_amp[0] >> 8;
+		op3 = (int16_t)get_mod_sample(op[3][voice_index].phase >> 8)*op_amp[3] >> 7;
+		op2 = (int16_t)get_mod_sample(op[2][voice_index].phase >> 8)*op_amp[2] >> 7;
+		op1 = (int16_t)get_mod_sample((op[1][voice_index].phase >> 8) + op3 + op2)*op_amp[1] >> 7;
+		op0 = (int16_t)get_sample((op[0][voice_index].phase >> 8) + op1)*op_amp[0] >> 7;
 		return op0;
 		break;
 	case 0x02:
-		op3 = (int16_t)get_mod_sample(op[3][voice_index].phase >> 8)*op_amp[3] >> 8;
-		op2 = (int16_t)get_mod_sample(op[2][voice_index].phase >> 8)*op_amp[2] >> 8;
-		op1 = (int16_t)get_mod_sample((op[1][voice_index].phase >> 8) + op2)*op_amp[1] >> 8;
-		op0 = (int16_t)get_sample((op[0][voice_index].phase >> 8) + op3 + op1)*op_amp[0] >> 8;
+		op3 = (int16_t)get_mod_sample(op[3][voice_index].phase >> 8)*op_amp[3] >> 7;
+		op2 = (int16_t)get_mod_sample(op[2][voice_index].phase >> 8)*op_amp[2] >> 7;
+		op1 = (int16_t)get_mod_sample((op[1][voice_index].phase >> 8) + op2)*op_amp[1] >> 7;
+		op0 = (int16_t)get_sample((op[0][voice_index].phase >> 8) + op3 + op1)*op_amp[0] >> 7;
 		return op0;
 		break;
 	case 0x03:
-		op3 = (int16_t)get_mod_sample(op[3][voice_index].phase >> 8)*op_amp[3] >> 8;
-		op2 = (int16_t)get_mod_sample((op[2][voice_index].phase >> 8) + op3)*op_amp[2] >> 8;
-		op1 = (int16_t)get_mod_sample((op[1][voice_index].phase >> 8) + op3)*op_amp[1] >> 8;
-		op0 = (int16_t)get_sample((op[0][voice_index].phase >> 8) + op2 + op1)*op_amp[0] >> 8;
+		op3 = (int16_t)get_mod_sample(op[3][voice_index].phase >> 8)*op_amp[3] >> 7;
+		op2 = (int16_t)get_mod_sample((op[2][voice_index].phase >> 8) + op3)*op_amp[2] >> 7;
+		op1 = (int16_t)get_mod_sample((op[1][voice_index].phase >> 8) + op3)*op_amp[1] >> 7;
+		op0 = (int16_t)get_sample((op[0][voice_index].phase >> 8) + op2 + op1)*op_amp[0] >> 7;
 		return op0;
 		break;
 	case 0x04:
-		op3 = (int16_t)get_mod_sample(op[3][voice_index].phase >> 8)*op_amp[3] >> 8;
-		op2 = (int16_t)get_mod_sample(op[2][voice_index].phase >> 8)*op_amp[2] >> 8;
-		op1 = (int16_t)get_mod_sample(op[1][voice_index].phase >> 8)*op_amp[1] >> 8;
-		op0 = (int16_t)get_sample((op[0][voice_index].phase >> 8) + op3 + op2 + op1)*op_amp[0] >> 8;
+		op3 = (int16_t)get_mod_sample(op[3][voice_index].phase >> 8)*op_amp[3] >> 7;
+		op2 = (int16_t)get_mod_sample(op[2][voice_index].phase >> 8)*op_amp[2] >> 7;
+		op1 = (int16_t)get_mod_sample(op[1][voice_index].phase >> 8)*op_amp[1] >> 7;
+		op0 = (int16_t)get_sample((op[0][voice_index].phase >> 8) + op3 + op2 + op1)*op_amp[0] >> 7;
 		return op0;
 		break;
 	case 0x05:
-		op3 = (int16_t)get_mod_sample(op[3][voice_index].phase >> 8)*op_amp[3] >> 8;
-		op2 = (int16_t)get_mod_sample((op[2][voice_index].phase >> 8) + op3)*op_amp[2] >> 8;
-		op1 = (int16_t)get_sample((op[1][voice_index].phase >> 8) + op2)*op_amp[1] >> 8;
-		op0 = (int16_t)get_sample(op[0][voice_index].phase >> 8)*op_amp[0] >> 8;
+		op3 = (int16_t)get_mod_sample(op[3][voice_index].phase >> 8)*op_amp[3] >> 7;
+		op2 = (int16_t)get_mod_sample((op[2][voice_index].phase >> 8) + op3)*op_amp[2] >> 7;
+		op1 = (int16_t)get_sample((op[1][voice_index].phase >> 8) + op2)*op_amp[1] >> 7;
+		op0 = (int16_t)get_sample(op[0][voice_index].phase >> 8)*op_amp[0] >> 7;
 		return ((int16_t)op1 + op0) >> 1;
 		break;
 	case 0x06:
-		op3 = (int16_t)get_mod_sample(op[3][voice_index].phase >> 8)*op_amp[3] >> 8;
-		op2 = (int16_t)get_mod_sample((op[2][voice_index].phase >> 8) + op3)*op_amp[2] >> 8;
-		op1 = (int16_t)get_sample((op[1][voice_index].phase >> 8) + op2)*op_amp[1] >> 8;
-		op0 = (int16_t)get_sample((op[0][voice_index].phase >> 8) + op2)*op_amp[0] >> 8;
+		op3 = (int16_t)get_mod_sample(op[3][voice_index].phase >> 8)*op_amp[3] >> 7;
+		op2 = (int16_t)get_mod_sample((op[2][voice_index].phase >> 8) + op3)*op_amp[2] >> 7;
+		op1 = (int16_t)get_sample((op[1][voice_index].phase >> 8) + op2)*op_amp[1] >> 7;
+		op0 = (int16_t)get_sample((op[0][voice_index].phase >> 8) + op2)*op_amp[0] >> 7;
 		return ((int16_t)op1 + op0) >> 1;
 		break;
 	case 0x07:
-		op3 = (int16_t)get_mod_sample(op[3][voice_index].phase >> 8)*op_amp[3] >> 8;
-		op2 = (int16_t)get_sample((op[2][voice_index].phase >> 8) + op3)*op_amp[2] >> 8;
-		op1 = (int16_t)get_mod_sample(op[1][voice_index].phase >> 8)*op_amp[1] >> 8;
-		op0 = (int16_t)get_sample((op[0][voice_index].phase >> 8) + op1)*op_amp[0] >> 8;
+		op3 = (int16_t)get_mod_sample(op[3][voice_index].phase >> 8)*op_amp[3] >> 7;
+		op2 = (int16_t)get_sample((op[2][voice_index].phase >> 8) + op3)*op_amp[2] >> 7;
+		op1 = (int16_t)get_mod_sample(op[1][voice_index].phase >> 8)*op_amp[1] >> 7;
+		op0 = (int16_t)get_sample((op[0][voice_index].phase >> 8) + op1)*op_amp[0] >> 7;
 		return ((int16_t)op2 + op0) >> 1;
 		break;
 	case 0x08:
-		op3 = (int16_t)get_mod_sample(op[3][voice_index].phase >> 8)*op_amp[3] >> 8;
-		op2 = (int16_t)get_sample((op[2][voice_index].phase >> 8) + op3)*op_amp[2] >> 8;
-		op1 = (int16_t)get_sample((op[1][voice_index].phase >> 8) + op3)*op_amp[1] >> 8;
-		op0 = (int16_t)get_sample((op[0][voice_index].phase >> 8) + op3)*op_amp[0] >> 8;
+		op3 = (int16_t)get_mod_sample(op[3][voice_index].phase >> 8)*op_amp[3] >> 7;
+		op2 = (int16_t)get_sample((op[2][voice_index].phase >> 8) + op3)*op_amp[2] >> 7;
+		op1 = (int16_t)get_sample((op[1][voice_index].phase >> 8) + op3)*op_amp[1] >> 7;
+		op0 = (int16_t)get_sample((op[0][voice_index].phase >> 8) + op3)*op_amp[0] >> 7;
 		return ((int16_t)op2 + op1 + op0) / 3;
 		break;
 	case 0x09:
-		op3 = (int16_t)get_mod_sample(op[3][voice_index].phase >> 8)*op_amp[3] >> 8;
-		op2 = (int16_t)get_sample((op[2][voice_index].phase >> 8) + op3)*op_amp[2] >> 8;
-		op1 = (int16_t)get_sample((op[1][voice_index].phase >> 8) + op3)*op_amp[1] >> 8;
-		op0 = (int16_t)get_sample(op[0][voice_index].phase >> 8)*op_amp[0] >> 8;
+		op3 = (int16_t)get_mod_sample(op[3][voice_index].phase >> 8)*op_amp[3] >> 7;
+		op2 = (int16_t)get_sample((op[2][voice_index].phase >> 8) + op3)*op_amp[2] >> 7;
+		op1 = (int16_t)get_sample((op[1][voice_index].phase >> 8) + op3)*op_amp[1] >> 7;
+		op0 = (int16_t)get_sample(op[0][voice_index].phase >> 8)*op_amp[0] >> 7;
 		return ((int16_t)op2 + op1 + op0) / 3;
 		break;
 	case 0x0A:
-		op3 = (int16_t)get_mod_sample(op[3][voice_index].phase >> 8)*op_amp[3] >> 8;
-		op2 = (int16_t)get_sample((op[2][voice_index].phase >> 8) + op3)*op_amp[2] >> 8;
-		op1 = (int16_t)get_sample(op[1][voice_index].phase >> 8)*op_amp[1] >> 8;
-		op0 = (int16_t)get_sample(op[0][voice_index].phase >> 8)*op_amp[0] >> 8;
+		op3 = (int16_t)get_mod_sample(op[3][voice_index].phase >> 8)*op_amp[3] >> 7;
+		op2 = (int16_t)get_sample((op[2][voice_index].phase >> 8) + op3)*op_amp[2] >> 7;
+		op1 = (int16_t)get_sample(op[1][voice_index].phase >> 8)*op_amp[1] >> 7;
+		op0 = (int16_t)get_sample(op[0][voice_index].phase >> 8)*op_amp[0] >> 7;
 		return ((int16_t)op2 + op1 + op0) / 3;
 		break;
 	case 0x0B:
-		op3 = (int16_t)get_sample(op[3][voice_index].phase >> 8)*op_amp[3] >> 8;
-		op2 = (int16_t)get_sample(op[2][voice_index].phase >> 8)*op_amp[2] >> 8;
-		op1 = (int16_t)get_sample(op[1][voice_index].phase >> 8)*op_amp[1] >> 8;
-		op0 = (int16_t)get_sample(op[0][voice_index].phase >> 8)*op_amp[0] >> 8;
+		op3 = (int16_t)get_sample(op[3][voice_index].phase >> 8)*op_amp[3] >> 7;
+		op2 = (int16_t)get_sample(op[2][voice_index].phase >> 8)*op_amp[2] >> 7;
+		op1 = (int16_t)get_sample(op[1][voice_index].phase >> 8)*op_amp[1] >> 7;
+		op0 = (int16_t)get_sample(op[0][voice_index].phase >> 8)*op_amp[0] >> 7;
 		return ((int16_t)op3 + op2 + op1 + op0) >> 2;
 		break;
 	default:

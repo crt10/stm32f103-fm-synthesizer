@@ -25,7 +25,7 @@ Core/Src/audio_out.o: ../Core/Src/audio_out.c ../Core/Inc/audio_out.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim_ex.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h \
- ../Core/Inc/synth.h ../Core/Inc/phase.h
+ ../Core/Inc/synth.h ../Core/Inc/phase.h ../Core/Inc/envelope.h
 
 ../Core/Inc/audio_out.h:
 
@@ -84,3 +84,5 @@ Core/Src/audio_out.o: ../Core/Src/audio_out.c ../Core/Inc/audio_out.h \
 ../Core/Inc/synth.h:
 
 ../Core/Inc/phase.h:
+
+../Core/Inc/envelope.h:
