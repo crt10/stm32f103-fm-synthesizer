@@ -1,4 +1,5 @@
-synth.c:12:6:init_synth	48	static
-synth.c:23:6:add_voice	32	static
-synth.c:51:6:delete_voice	0	static
-synth.c:63:9:synth_sample	48	static
+synth.h:96:23:modulate	20	static
+synth.c:10:6:init_synth	36	static
+synth.c:29:6:add_voice	40	static
+synth.c:61:6:release_voice	0	static
+synth.c:73:9:synth_sample	32	static

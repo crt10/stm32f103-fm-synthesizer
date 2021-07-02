@@ -89,7 +89,7 @@ void process_midi_byte(UART_HandleTypeDef* huart) {
 }
 
 void note_off() {
-	delete_voice(data[0]);
+	release_voice(data[0]);
 }
 
 void note_on() {

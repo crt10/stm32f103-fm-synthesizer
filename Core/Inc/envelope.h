@@ -18,14 +18,18 @@
  */
 #define ENV_SAMPLING_FREQ 32
 #define ENV_MAX_PERIOD (SAMPLING_FREQ / ENV_SAMPLING_FREQ)
+#define ENV_MAX_RATE 0x80
 
 typedef enum ADSR_STATES {
 	ATTACK,
 	DECAY,
 	SUSTAIN,
-	RELEASE
+	RELEASE,
+	SILENT
 } ADSR_STATES;
 
 uint16_t env_period;
+
+static inline uint16_t calculate_env_inc(uint8_t rate) { return (ENV_MAX_RATE << 8) / (uint16_t)(ENV_MAX_RATE - rate + 1); };
 
 #endif /* INC_ENVELOPE_H_ */
