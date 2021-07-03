@@ -13,7 +13,7 @@
 #include "envelope.h"
 
 #define MAX_OPERATORS 4
-#define MAX_VOICES 16
+#define MAX_VOICES 8
 #define MAX_VOLUME 0x80		//changing this may require various changes in code
 #define MAX_VOLUME_BITS 7	//max volume represented by bit place
 
@@ -28,7 +28,7 @@ typedef struct OPERATOR {
 
 	//ENVELOPE
 	ADSR_STATES adsr_state;
-	uint16_t env_amp;			//envelope amplitude
+	uint16_t env_amp;			//envelope amplitude (8 MSB integer, 8 LSB decimal)
 } OPERATOR;
 
 OPERATOR op[MAX_OPERATORS][MAX_VOICES];
@@ -45,6 +45,7 @@ uint8_t algo;
 
 void init_synth();
 int16_t synth_sample();
+void clear_voices();
 void add_voice(uint8_t note_value);
 void release_voice(uint8_t note_value);
 static inline void delete_voice(uint8_t voice_index) { op[0][voice_index].note_value = -1; };

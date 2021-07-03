@@ -1,5 +1,6 @@
-synth.h:96:23:modulate	20	static
-synth.c:10:6:init_synth	36	static
-synth.c:29:6:add_voice	40	static
-synth.c:61:6:release_voice	0	static
-synth.c:73:9:synth_sample	32	static
+synth.h:97:23:modulate	20	static
+synth.c:11:6:init_synth	128	static
+synth.c:30:6:clear_voices	0	static
+synth.c:36:6:add_voice	40	static
+synth.c:82:6:release_voice	0	static
+synth.c:94:9:synth_sample	32	static

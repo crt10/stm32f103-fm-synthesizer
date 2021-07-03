@@ -111,7 +111,9 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	__NOP();
+	if (midi_buffer_read != midi_buffer_write) {
+		process_midi_byte(midi_uart);
+	}
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -215,7 +217,7 @@ static void MX_TIM2_Init(void)
   htim2.Instance = TIM2;
   htim2.Init.Prescaler = 0;
   htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim2.Init.Period = 1333-1;
+  htim2.Init.Period = 1451-1;
   htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim2) != HAL_OK)
@@ -301,7 +303,8 @@ static void MX_GPIO_Init(void)
 
 /* USER CODE BEGIN 4 */
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
-	process_midi_byte(huart);
+	midi_buffer_write = (midi_buffer_write + 1) & (RING_BUFFER_SIZE - 1);
+	HAL_UART_Receive_IT(huart, &midi_buffer[midi_buffer_write], 1);
 }
 
 void sample() {

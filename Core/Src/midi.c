@@ -10,19 +10,24 @@
 void init_midi(UART_HandleTypeDef* huart) {
 	data[0] = -1;
 	data[1] = -1;
-	HAL_UART_Receive_IT(huart, &midi_in, 1);
+	for (uint8_t i = 0; i < RING_BUFFER_SIZE; i++) {
+		midi_buffer[i] = -1;
+	}
+	midi_buffer_read = 0;
+	midi_buffer_write = 0;
+	HAL_UART_Receive_IT(huart, &midi_buffer[midi_buffer_write], 1);
 }
 
-void process_midi_byte(UART_HandleTypeDef* huart) {
-	HAL_UART_Receive_IT(huart, &midi_in, 1);	//re-enable interrupt for next byte
-	if ((midi_in & 0x80) == 0x80) {				//if byte received was status byte
+void process_midi_byte() {
+	uint8_t midi_in = midi_buffer[midi_buffer_read];
+	if ((midi_in & 0x80) == 0x80) {	//if byte received was status byte
 		status = midi_in;
 		data[0] = -1;
 		data[1] = -1;
 	}
-	else {										//if byte received was data byte
-		switch (status) {
-		case 0x80:									//note off
+	else {													//if byte received was data byte
+		switch (status & 0xF0) {
+		case 0x80:												//note off
 			if (data[0] == (uint8_t)-1) {
 				data[0] = midi_in;
 			}
@@ -31,13 +36,14 @@ void process_midi_byte(UART_HandleTypeDef* huart) {
 				note_off();
 			}
 			break;
-		case 0x90:									//note on
+		case 0x90:												//note on
 			if (data[0] == (uint8_t)-1) {
 				data[0] = midi_in;
 			}
 			else {
 				data[1] = midi_in;
-				if (data[1] == 0) {					//some midi devices send velocity 0 to turn off notes
+				/*some midi devices send velocity 0 to turn off notes*/
+				if (data[1] == 0) {
 					note_off();
 				}
 				else {
@@ -45,7 +51,7 @@ void process_midi_byte(UART_HandleTypeDef* huart) {
 				}
 			}
 			break;
-		case 0xA0:									//polyphonic pressure (unimplemented)
+		case 0xA0:												//polyphonic pressure (unimplemented)
 			if (data[0] == (uint8_t)-1) {
 				data[0] = midi_in;
 			}
@@ -54,7 +60,7 @@ void process_midi_byte(UART_HandleTypeDef* huart) {
 				polyphonic_pressure();
 			}
 			break;
-		case 0xB0:									//control change (unimplemented)
+		case 0xB0:												//control change (unimplemented)
 			if (data[0] == (uint8_t)-1) {
 				data[0] = midi_in;
 			}
@@ -63,15 +69,15 @@ void process_midi_byte(UART_HandleTypeDef* huart) {
 				control_change();
 			}
 			break;
-		case 0xC0:									//program change (unimplemented)
+		case 0xC0:												//program change (unimplemented)
 			data[0] = midi_in;
 			program_change();
 			break;
-		case 0xD0:									//channel pressure (unimplemented)
+		case 0xD0:												//channel pressure (unimplemented)
 			data[0] = midi_in;
 			channel_pressure();
 			break;
-		case 0xE0:									//pitch bend
+		case 0xE0:												//pitch bend (unimplemented)
 			if (data[0] == (uint8_t)-1) {
 				data[0] = midi_in;
 			}
@@ -80,20 +86,32 @@ void process_midi_byte(UART_HandleTypeDef* huart) {
 				pitch_bend();
 			}
 			break;
-		case 0xF0:									//system (unimplemented)
+		case 0xF0:												//system (unimplemented)
+			if (status == 0xFF) {									//system reset
+				data[0] = -1;
+				data[1] = -1;
+				midi_buffer_read = 0;
+				midi_buffer_write = 0;
+				clear_voices();
+			}
 			break;
 		default:
 			__NOP();
 		}
 	}
+	midi_buffer_read = (midi_buffer_read + 1) & (RING_BUFFER_SIZE - 1);
 }
 
 void note_off() {
 	release_voice(data[0]);
+	data[0] = -1;
+	data[1] = -1;
 }
 
 void note_on() {
 	add_voice(data[0]);
+	data[0] = -1;
+	data[1] = -1;
 }
 
 void polyphonic_pressure() {

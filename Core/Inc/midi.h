@@ -11,12 +11,17 @@
 #include "stm32f1xx_hal.h"
 #include "synth.h"
 
-uint8_t midi_in;
+#define RING_BUFFER_SIZE 128	//should be exponentials of 2 and lower than 256. EX: 4, 8, 16, 32, etc.
+
 uint8_t status;
 uint8_t data[2];
+uint8_t midi_buffer[RING_BUFFER_SIZE];
+volatile uint8_t midi_buffer_read;
+volatile uint8_t midi_buffer_write;
+
 
 void init_midi(UART_HandleTypeDef* huart);
-void process_midi_byte(UART_HandleTypeDef* huart);
+void process_midi_byte();
 
 void note_off();
 void note_on();

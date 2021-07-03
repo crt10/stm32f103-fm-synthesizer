@@ -12,10 +12,10 @@ void init_synth() {
 		algo = 0x00;								//default algorithm 0
 		op_amp[i] = MAX_VOLUME;						//default amplitude 128
 		op_ratio[i] = 0x10;							//default multiplier 1.0 (4 MSB integer, 4 LSB decimal)
-		op_attack[i] = 96;//ENV_MAX_RATE;				//default attack 128
-		op_decay[i] = 96;//ENV_MAX_RATE;					//default decay 128
-		op_sustain[i] = 64;//MAX_VOLUME;					//default sustain 128
-		op_release[i] = 96;//ENV_MAX_RATE;				//default release 128
+		op_attack[i] = 126;//ENV_MAX_RATE;				//default attack 128
+		op_decay[i] = 120;//ENV_MAX_RATE;					//default decay 128
+		op_sustain[i] = 100;//MAX_VOLUME;					//default sustain 128
+		op_release[i] = 110;//ENV_MAX_RATE;				//default release 128
 		op_attack_inc[i] = calculate_env_inc(op_attack[i]);//ENV_MAX_RATE << 8;
 		op_decay_inc[i] = calculate_env_inc(op_decay[i]);//ENV_MAX_RATE << 8;
 		op_release_inc[i] = calculate_env_inc(op_release[i]);//ENV_MAX_RATE << 8;
@@ -26,15 +26,35 @@ void init_synth() {
 	env_period = ENV_MAX_PERIOD;
 }
 
+void clear_voices() {
+	for (uint8_t i = 0; i < MAX_VOICES; i++) {
+		op[0][i].note_value = -1;
+	}
+}
+
 void add_voice(uint8_t note_value) {
-	uint8_t voice_index;
+	uint8_t voice_index, released_voice = -1;
 	for (voice_index = 0; voice_index < MAX_VOICES; voice_index++) {
-		if (op[0][voice_index].note_value == (uint8_t)-1) {
+		if (op[0][voice_index].note_value == (uint8_t)-1) {										//find unused voice
 			break;
 		}
 	}
+	for (uint8_t i = 0; i < MAX_VOICES; i++) {
+		if (op[0][i].note_value == note_value) {												//if the same note is active but released, reactivate it
+			voice_index = i;
+			break;
+		}
+		if (op[0][i].adsr_state == RELEASE) {											//keep track of any note in released state
+			released_voice = i;
+		}
+	}
 	if (voice_index == MAX_VOICES) {
-		return;
+		if (released_voice == (uint8_t)-1) {
+			return;
+		}
+		else {
+			voice_index = released_voice;
+		}
 	}
 	for (uint8_t op_index = 0; op_index < MAX_OPERATORS; op_index++) {
 		op[op_index][voice_index].note_value = note_value;										//store note
@@ -47,8 +67,8 @@ void add_voice(uint8_t note_value) {
 			op[op_index][voice_index].delta = calculate_delta(op[0][voice_index].freq);				//calculate and store delta
 		}
 
-		op[op_index][voice_index].volume = 0x00;
-		op[op_index][voice_index].env_amp = op_attack_inc[op_index];							//start envelope amp with attack inc
+		op[op_index][voice_index].volume = 0x00;												//reset volume to 0
+		op[op_index][voice_index].env_amp = op_attack_inc[op_index];							//start envelope amp with attack increment
 		if (op_attack_inc[op_index] == MAX_VOLUME << 8) {										//if attack rate is max
 			op[op_index][voice_index].adsr_state = DECAY;											//start on decay state
 		}
