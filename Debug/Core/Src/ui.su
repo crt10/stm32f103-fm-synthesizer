@@ -1,0 +1,4 @@
+ui.c:31:6:display_send_command	40	static
+ui.c:45:6:display_send_data	40	static
+ui.c:10:6:init_ui	8	static
+ui.c:57:6:display_i2c_write	24	static
