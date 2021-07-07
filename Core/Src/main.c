@@ -54,11 +54,6 @@ TIM_HandleTypeDef htim2;
 UART_HandleTypeDef huart1;
 
 /* USER CODE BEGIN PV */
-//SPI_HandleTypeDef* audio_spi = &hspi1;
-//TIM_HandleTypeDef* audio_tim = &htim2;
-//UART_HandleTypeDef* midi_uart = &huart1;
-//I2C_HandleTypeDef* ui_i2c = &hi2c2;
-//DMA_HandleTypeDef* ui_dma = &hdma_i2c2_tx;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/

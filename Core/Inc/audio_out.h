@@ -11,6 +11,11 @@
 #include "stm32f1xx_hal.h"
 #include "synth.h"
 
+#define AUDIO_GPIO GPIOA
+#define AUDIO_SPI_CS_PIN GPIO_BSRR_BR4
+
+SPI_TypeDef* audio_spi;
+
 uint16_t output_volume;
 
 void init_audio_out(SPI_HandleTypeDef* hspi, TIM_HandleTypeDef* htim);

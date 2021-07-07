@@ -21,7 +21,7 @@ void init_ui(I2C_HandleTypeDef* hi2c) {
 	//set cursor to move to right along with DDRAM increment when written
 	display_send_command(DISPLAY_CMD_ENTRY | DISPLAY_BIT_ENTRY_INC);
 	//turn on display and cursor
-	display_send_command(DISPLAY_CMD_ON_OFF | DISPLAY_BIT_ON_DISPLAY | DISPLAY_BIT_ON_CURSOR |  DISPLAY_BIT_ON_BLINK);
+	display_send_command(DISPLAY_CMD_ON_OFF | DISPLAY_BIT_ON_DISPLAY | DISPLAY_BIT_ON_CURSOR);
 	display_send_data('t');
 	display_send_data('e');
 	display_send_data('s');
