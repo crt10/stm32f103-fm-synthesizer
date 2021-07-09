@@ -25,7 +25,7 @@
 #include "midi.h"
 #include "audio_out.h"
 #include "synth.h"
-#include "ui.h"
+#include "ui_fsm.h"
 
 /* USER CODE END Includes */
 
@@ -363,13 +363,31 @@ static void MX_GPIO_Init(void)
 
   /*Configure GPIO pins : PB7 PB8 PB9 */
   GPIO_InitStruct.Pin = GPIO_PIN_7|GPIO_PIN_8|GPIO_PIN_9;
-  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  /* EXTI interrupt init*/
+  HAL_NVIC_SetPriority(EXTI9_5_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
 
 }
 
 /* USER CODE BEGIN 4 */
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
+	switch (GPIO_Pin) {
+	case UI_PB0:
+		fsm(pb_0);
+		break;
+	case UI_PB1:
+		fsm(pb_1);
+		break;
+	case UI_PB2:
+		fsm(pb_2);
+		break;
+	}
+}
+
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 	midi_buffer_write = (midi_buffer_write + 1) & (RING_BUFFER_SIZE - 1);
 	HAL_UART_Receive_IT(huart, &midi_buffer[midi_buffer_write], 1);

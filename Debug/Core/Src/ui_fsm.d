@@ -1,4 +1,4 @@
-Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
+Core/Src/ui_fsm.o: ../Core/Src/ui_fsm.c ../Core/Inc/ui_fsm.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h \
  ../Core/Inc/stm32f1xx_hal_conf.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_rcc.h \
@@ -26,11 +26,9 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim_ex.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h \
- ../Core/Inc/midi.h ../Core/Inc/synth.h ../Core/Inc/phase.h \
- ../Core/Inc/envelope.h ../Core/Inc/audio_out.h ../Core/Inc/synth.h \
- ../Core/Inc/ui_fsm.h ../Core/Inc/ui.h
+ ../Core/Inc/ui.h
 
-../Core/Inc/main.h:
+../Core/Inc/ui_fsm.h:
 
 ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h:
 
@@ -85,19 +83,5 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
 ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim_ex.h:
 
 ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h:
-
-../Core/Inc/midi.h:
-
-../Core/Inc/synth.h:
-
-../Core/Inc/phase.h:
-
-../Core/Inc/envelope.h:
-
-../Core/Inc/audio_out.h:
-
-../Core/Inc/synth.h:
-
-../Core/Inc/ui_fsm.h:
 
 ../Core/Inc/ui.h:

@@ -1,4 +1,7 @@
-ui.c:31:6:display_send_command	40	static
-ui.c:45:6:display_send_data	40	static
-ui.c:10:6:init_ui	8	static
-ui.c:57:6:display_i2c_write	24	static
+ui.c:27:6:display_send_command	40	static
+ui.c:10:6:init_display	8	static
+ui.c:41:6:display_send_data	40	static
+ui.c:53:6:display_i2c_write	24	static
+ui.c:57:6:display_i2c_dma_write	4	static
+ui.c:61:6:display_convert_cmd	12	static
+ui.c:72:6:display_convert_data	12	static

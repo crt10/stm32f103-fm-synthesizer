@@ -11,7 +11,7 @@
 #include "stm32f1xx_hal.h"
 
 #define DISPLAY_ADDR_I2C_WRITE 0x27 << 1
-#define DISPLAY_ADDR_I2C_READ 0x2F
+#define DISPLAY_ADDR_I2C_READ 0x2F << 1
 #define DISPLAY_CMD_CLEAR 0x01
 #define DISPLAY_CMD_RETURN 0x02
 #define DISPLAY_CMD_ENTRY 0x04			//bit 0: shift, bit 1: inc/dec
@@ -40,11 +40,23 @@
 #define DISPLAY_BIT_E 0x04
 #define DISPLAY_BIT_BACKLIGHT 0x08		//PCF8574 LCD I2C module uses pin 3 for backlight control
 
-I2C_HandleTypeDef* ui_i2c;
+#define DISPLAY_MAX_LENGTH 40			//1602 LCD can hold 40 characters per line in RAM
+#define DISPLAY_MAX_PHYSICAL_LENGTH 16	//1602 LCD can physically display 16 characters per line
 
-void init_ui(I2C_HandleTypeDef* hi2c);
+#define UI_PB0 GPIO_PIN_7
+#define UI_PB1 GPIO_PIN_8
+#define UI_PB2 GPIO_PIN_9
+
+I2C_HandleTypeDef* display_i2c;
+
+void init_display(I2C_HandleTypeDef* hi2c);
 void display_send_command(uint8_t cmd);
 void display_send_data(uint8_t data);
 void display_i2c_write(uint8_t byte);
+void display_i2c_dma_write(uint8_t* buffer, uint8_t size);
+
+/*used to convert bytes for 4-bit transmission*/
+void display_convert_cmd(uint8_t cmd, uint8_t* buffer, uint8_t* pos);
+void display_convert_data(uint8_t data, uint8_t* buffer, uint8_t* pos);
 
 #endif /* INC_UI_H_ */

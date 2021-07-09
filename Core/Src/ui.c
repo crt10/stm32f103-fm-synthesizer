@@ -7,8 +7,8 @@
 
 #include "ui.h"
 
-void init_ui(I2C_HandleTypeDef* hi2c) {
-	ui_i2c = hi2c;
+void init_display(I2C_HandleTypeDef* hi2c) {
+	display_i2c = hi2c;
 	//4 function set commands needed to determine bus mode
 	uint8_t init_4_bit_cmd = (DISPLAY_CMD_FUNC | DISPLAY_BIT_FUNC_BUS) | ((DISPLAY_CMD_FUNC | DISPLAY_BIT_FUNC_BUS) >> 4);
 	display_send_command(init_4_bit_cmd);
@@ -20,12 +20,8 @@ void init_ui(I2C_HandleTypeDef* hi2c) {
 	display_send_command(DISPLAY_CMD_CLEAR);
 	//set cursor to move to right along with DDRAM increment when written
 	display_send_command(DISPLAY_CMD_ENTRY | DISPLAY_BIT_ENTRY_INC);
-	//turn on display and cursor
+	//turn on display
 	display_send_command(DISPLAY_CMD_ON_OFF | DISPLAY_BIT_ON_DISPLAY | DISPLAY_BIT_ON_CURSOR);
-	display_send_data('t');
-	display_send_data('e');
-	display_send_data('s');
-	display_send_data('t');
 }
 
 void display_send_command(uint8_t cmd) {
@@ -55,5 +51,31 @@ void display_send_data(uint8_t data) {
 }
 
 void display_i2c_write(uint8_t byte) {
-	HAL_I2C_Master_Transmit(ui_i2c, DISPLAY_ADDR_I2C_WRITE, &byte, 1, 0xFF);
+	HAL_I2C_Master_Transmit(display_i2c, DISPLAY_ADDR_I2C_WRITE, &byte, 1, 0xFF);
+}
+
+void display_i2c_dma_write(uint8_t* buffer, uint8_t size) {
+	HAL_I2C_Master_Transmit_DMA(display_i2c, DISPLAY_ADDR_I2C_WRITE, buffer, size);
+}
+
+void display_convert_cmd(uint8_t cmd, uint8_t* buffer, uint8_t* pos){
+	uint8_t cmd_MSB = (cmd & 0xF0) | DISPLAY_BIT_BACKLIGHT;
+	uint8_t cmd_LSB = (cmd << 4) | DISPLAY_BIT_BACKLIGHT;
+	*(buffer + (*pos)++) = cmd_MSB;
+	*(buffer + (*pos)++) = cmd_MSB | DISPLAY_BIT_E;
+	*(buffer + (*pos)++) = cmd_MSB;
+	*(buffer + (*pos)++) = cmd_LSB;
+	*(buffer + (*pos)++) = cmd_LSB | DISPLAY_BIT_E;
+	*(buffer + (*pos)++) = cmd_LSB;
+}
+
+void display_convert_data(uint8_t data, uint8_t* buffer, uint8_t* pos) {
+	uint8_t data_MSB = (data & 0xF0) | DISPLAY_BIT_RS | DISPLAY_BIT_BACKLIGHT;
+	uint8_t data_LSB = (data << 4) | DISPLAY_BIT_RS | DISPLAY_BIT_BACKLIGHT;
+	*(buffer + (*pos)++) = data_MSB;
+	*(buffer + (*pos)++) = data_MSB | DISPLAY_BIT_E;
+	*(buffer + (*pos)++) = data_MSB;
+	*(buffer + (*pos)++) = data_LSB;
+	*(buffer + (*pos)++) = data_LSB | DISPLAY_BIT_E;
+	*(buffer + (*pos)++) = data_LSB;
 }

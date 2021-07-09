@@ -94,7 +94,7 @@ static inline void cycle_envelope(uint8_t voice_index) {
 	}
 }
 
-static inline int16_t modulate(uint8_t voice_index) {
+static inline int8_t modulate(uint8_t voice_index) {
 	for (uint8_t op_index = 0; op_index < MAX_OPERATORS; op_index++) {			//loop through all operators of voice
 		/*update phase of active operator*/
 		op[op_index][voice_index].phase = update_phase(op[op_index][voice_index].delta, op[op_index][voice_index].phase);

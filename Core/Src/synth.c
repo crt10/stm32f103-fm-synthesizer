@@ -16,9 +16,9 @@ void init_synth() {
 		op_decay[i] = 120;//ENV_MAX_RATE;					//default decay 128
 		op_sustain[i] = 100;//MAX_VOLUME;					//default sustain 128
 		op_release[i] = 110;//ENV_MAX_RATE;				//default release 128
-		op_attack_inc[i] = calculate_env_inc(op_attack[i]);//ENV_MAX_RATE << 8;
-		op_decay_inc[i] = calculate_env_inc(op_decay[i]);//ENV_MAX_RATE << 8;
-		op_release_inc[i] = calculate_env_inc(op_release[i]);//ENV_MAX_RATE << 8;
+		op_attack_inc[i] = calculate_env_inc(op_attack[i]);
+		op_decay_inc[i] = calculate_env_inc(op_decay[i]);
+		op_release_inc[i] = calculate_env_inc(op_release[i]);
 		for (uint8_t o = 0; o < MAX_VOICES; o++) {
 			op[i][o] = (OPERATOR) {-1, -1, MAX_VOLUME, -1, -1, SILENT, MAX_VOLUME << 8};
 		}
