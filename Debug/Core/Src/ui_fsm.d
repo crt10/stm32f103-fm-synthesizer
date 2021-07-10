@@ -26,7 +26,8 @@ Core/Src/ui_fsm.o: ../Core/Src/ui_fsm.c ../Core/Inc/ui_fsm.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim_ex.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h \
- ../Core/Inc/ui.h
+ ../Core/Inc/ui.h ../Core/Inc/synth.h ../Core/Inc/phase.h \
+ ../Core/Inc/envelope.h
 
 ../Core/Inc/ui_fsm.h:
 
@@ -85,3 +86,9 @@ Core/Src/ui_fsm.o: ../Core/Src/ui_fsm.c ../Core/Inc/ui_fsm.h \
 ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h:
 
 ../Core/Inc/ui.h:
+
+../Core/Inc/synth.h:
+
+../Core/Inc/phase.h:
+
+../Core/Inc/envelope.h:

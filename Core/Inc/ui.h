@@ -42,10 +42,13 @@
 
 #define DISPLAY_MAX_LENGTH 40			//1602 LCD can hold 40 characters per line in RAM
 #define DISPLAY_MAX_PHYSICAL_LENGTH 16	//1602 LCD can physically display 16 characters per line
+#define DISPLAY_MAX_LINES 2				//double line mode of 1602 LCD is used
 
 #define UI_PB0 GPIO_PIN_7
 #define UI_PB1 GPIO_PIN_8
 #define UI_PB2 GPIO_PIN_9
+
+extern const char* HEX_TO_STRING[];
 
 I2C_HandleTypeDef* display_i2c;
 

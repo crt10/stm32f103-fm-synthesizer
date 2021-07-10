@@ -12,10 +12,11 @@ void init_synth() {
 		algo = 0x00;								//default algorithm 0
 		op_amp[i] = MAX_VOLUME;						//default amplitude 128
 		op_ratio[i] = 0x10;							//default multiplier 1.0 (4 MSB integer, 4 LSB decimal)
-		op_attack[i] = 126;//ENV_MAX_RATE;				//default attack 128
-		op_decay[i] = 120;//ENV_MAX_RATE;					//default decay 128
-		op_sustain[i] = 100;//MAX_VOLUME;					//default sustain 128
-		op_release[i] = 110;//ENV_MAX_RATE;				//default release 128
+		op_detune[i] = 0x00;						//default detune 0
+		op_attack[i] = ENV_MAX_RATE;				//default attack 128
+		op_decay[i] = ENV_MAX_RATE;					//default decay 128
+		op_sustain[i] = MAX_VOLUME;					//default sustain 128
+		op_release[i] = ENV_MAX_RATE;				//default release 128
 		op_attack_inc[i] = calculate_env_inc(op_attack[i]);
 		op_decay_inc[i] = calculate_env_inc(op_decay[i]);
 		op_release_inc[i] = calculate_env_inc(op_release[i]);

@@ -155,6 +155,8 @@ const uint8_t ui_menu_lfo[DISPLAY_MAX_PHYSICAL_LENGTH] = " fdbk ~lfo algo ";
 const uint8_t ui_menu_algo[DISPLAY_MAX_PHYSICAL_LENGTH] = " lfo ~algo instr";
 const uint8_t ui_menu_instr[DISPLAY_MAX_PHYSICAL_LENGTH] = "algo ~instr amp ";
 const uint8_t ui_set[DISPLAY_MAX_PHYSICAL_LENGTH] = "OP1 OP2 OP3 OP4 ";
+const uint8_t ui_set_algo[DISPLAY_MAX_PHYSICAL_LENGTH] = "SELECT ALGO:    ";
+const uint8_t ui_set_env[DISPLAY_MAX_PHYSICAL_LENGTH] = "ATK DEC SUS REL ";
 const uint8_t* ui_string_table[NUM_OF_UI_STRINGS] = {
 	ui_menu_amp,
 	ui_menu_ratio,
@@ -165,7 +167,9 @@ const uint8_t* ui_string_table[NUM_OF_UI_STRINGS] = {
 	ui_menu_lfo,
 	ui_menu_algo,
 	ui_menu_instr,
-	ui_set
+	ui_set,
+	ui_set_algo,
+	ui_set_env
 };
 uint8_t* ui_string_table_converted[NUM_OF_UI_STRINGS] = {
 	ui_menu_amp_converted,
@@ -177,7 +181,9 @@ uint8_t* ui_string_table_converted[NUM_OF_UI_STRINGS] = {
 	ui_menu_lfo_converted,
 	ui_menu_algo_converted,
 	ui_menu_instr_converted,
-	ui_set_converted
+	ui_set_converted,
+	ui_set_algo_converted,
+	ui_set_env_converted
 };
 
 void init_ui(I2C_HandleTypeDef* hi2c) {
@@ -196,7 +202,7 @@ void init_ui(I2C_HandleTypeDef* hi2c) {
 			DISPLAY_CMD_DDRAM_ADDR | DISPLAY_ADDR_LINE_2, ui_string_table_converted[i], &index
 		);
 		for (uint8_t o = 0; o < DISPLAY_MAX_PHYSICAL_LENGTH; o++) {
-			display_convert_data(						//write null terminator for second line
+			display_convert_data(						//write spaces for second line
 				' ', ui_string_table_converted[i], &index
 			);
 		}
@@ -211,7 +217,7 @@ void init_ui(I2C_HandleTypeDef* hi2c) {
 void fsm(input key) {
 	uint8_t i;
 	for (i = 0; fsm_transition_table[present_state][i].key != key &&
-	fsm_transition_table[present_state][i].key != invalid; i++);		//point i to the correct transition
+		fsm_transition_table[present_state][i].key != invalid; i++);	//point i to the correct transition
 	fsm_transition_table[present_state][i].transition_task();			//execute associated transition function
 	present_state = fsm_transition_table[present_state][i].next_state;	//update state
 }
@@ -260,34 +266,94 @@ void select_menu_instr() {
 }
 
 void enter_menu_amp() {
-
+	char params[DISPLAY_MAX_PHYSICAL_LENGTH+1] = "";
+	for (uint8_t op = 0; op < MAX_OPERATORS; op++) {
+		strcat(params, HEX_TO_STRING[op_amp[op]]);
+	}
+	uint8_t index = SECOND_LINE_START_INDEX;
+	for (uint8_t i = 0; i < DISPLAY_MAX_PHYSICAL_LENGTH; i++) {
+		display_convert_data(
+			params[i], ui_set_converted, &index
+		);
+	}
+	display_i2c_dma_write(ui_set_converted, UI_STRING_CONVERTED_SIZE);
 }
 
 void enter_menu_ratio() {
-
+	char params[DISPLAY_MAX_PHYSICAL_LENGTH+1] = "";
+	for (uint8_t op = 0; op < MAX_OPERATORS; op++) {
+		strcat(params, HEX_TO_STRING[op_ratio[op]]);
+	}
+	uint8_t index = SECOND_LINE_START_INDEX;
+	for (uint8_t i = 0; i < DISPLAY_MAX_PHYSICAL_LENGTH; i++) {
+		display_convert_data(
+			params[i], ui_set_converted, &index
+		);
+	}
+	display_i2c_dma_write(ui_set_converted, UI_STRING_CONVERTED_SIZE);
 }
 
 void enter_menu_detune() {
-
+	char params[DISPLAY_MAX_PHYSICAL_LENGTH+1] = "";
+	for (uint8_t op = 0; op < MAX_OPERATORS; op++) {
+		strcat(params, HEX_TO_STRING[op_detune[op]]);
+	}
+	uint8_t index = SECOND_LINE_START_INDEX;
+	for (uint8_t i = 0; i < DISPLAY_MAX_PHYSICAL_LENGTH; i++) {
+		display_convert_data(
+			params[i], ui_set_converted, &index
+		);
+	}
+	display_i2c_dma_write(ui_set_converted, UI_STRING_CONVERTED_SIZE);
 }
 
 void enter_menu_env() {
-
+	char params[DISPLAY_MAX_PHYSICAL_LENGTH+1] = "";
+	strcat(params, HEX_TO_STRING[fsm_env_op]);
+	uint8_t index = SECOND_LINE_START_INDEX;
+	for (uint8_t i = 0; i < 4; i++) {
+		display_convert_data(
+			params[i], ui_menu_env_op_converted, &index
+		);
+	}
+	display_i2c_dma_write(ui_menu_env_op_converted, UI_STRING_CONVERTED_SIZE);
 }
 
 void enter_menu_env_op() {
-
+	char params[DISPLAY_MAX_PHYSICAL_LENGTH+1] = "";
+	strcat(params, HEX_TO_STRING[op_attack[fsm_env_op]]);
+	strcat(params, HEX_TO_STRING[op_decay[fsm_env_op]]);
+	strcat(params, HEX_TO_STRING[op_sustain[fsm_env_op]]);
+	strcat(params, HEX_TO_STRING[op_release[fsm_env_op]]);
+	uint8_t index = SECOND_LINE_START_INDEX;
+	for (uint8_t i = 0; i < DISPLAY_MAX_PHYSICAL_LENGTH; i++) {
+		display_convert_data(
+			params[i], ui_set_env_converted, &index
+		);
+	}
+	display_i2c_dma_write(ui_set_env_converted, UI_STRING_CONVERTED_SIZE);
 }
 
 void enter_menu_fdbk() {
 
 }
+
 void enter_menu_lfo() {
 
 }
-void enter_menu_algo() {
 
+void enter_menu_algo() {
+	char params[DISPLAY_MAX_PHYSICAL_LENGTH+1] = "";
+	strcat(params, HEX_TO_STRING[algo]);
+	uint8_t index = SECOND_LINE_START_INDEX;
+	for (uint8_t i = 0; i < 4; i++) {
+		display_convert_data(
+			params[i], ui_set_algo_converted, &index
+		);
+	}
+	display_i2c_dma_write(ui_set_algo_converted, UI_STRING_CONVERTED_SIZE);
 }
+
 void enter_menu_instr() {
 
 }

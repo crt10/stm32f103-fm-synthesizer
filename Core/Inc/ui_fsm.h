@@ -9,13 +9,18 @@
 #define INC_UI_FSM_H_
 
 #include "stm32f1xx_hal.h"
+#include "string.h"
 #include "ui.h"
+#include "synth.h"
 
 #define NUM_OF_STATES 17
 #define MAX_PARAMS 4
-#define NUM_OF_UI_STRINGS 10
-#define UI_STRING_CONVERTED_SIZE 2*DISPLAY_MAX_PHYSICAL_LENGTH*6 + (6*2)
-#define SECOND_LINE_START_INDEX DISPLAY_MAX_PHYSICAL_LENGTH*6 + (6*2)
+#define NUM_OF_UI_STRINGS 12
+/* NOTE: 6 is the number of messages needed in order to send 1 data/cmd to the LCD
+ * In order to send 1 character, we send 6 messages, hence the *6.
+ * 2 cmds are neede to update the DDRAM address, hence the (2*6). */
+#define UI_STRING_CONVERTED_SIZE DISPLAY_MAX_LINES*DISPLAY_MAX_PHYSICAL_LENGTH*6 + (2*6)
+#define SECOND_LINE_START_INDEX DISPLAY_MAX_PHYSICAL_LENGTH*6 + (2*6)
 
 typedef void (* transition_fn) ();
 typedef enum {
@@ -101,7 +106,7 @@ extern const transition set_fdbk_transitions[];
 extern const transition set_lfo_transitions[];
 extern const transition set_algo_transitions[];
 extern const transition set_instr_transitions[];
-const transition* fsm_transition_table[NUM_OF_STATES];
+extern const transition* fsm_transition_table[NUM_OF_STATES];
 
 extern const uint8_t ui_menu_amp[DISPLAY_MAX_PHYSICAL_LENGTH];
 extern const uint8_t ui_menu_ratio[DISPLAY_MAX_PHYSICAL_LENGTH];
@@ -113,7 +118,9 @@ extern const uint8_t ui_menu_lfo[DISPLAY_MAX_PHYSICAL_LENGTH];
 extern const uint8_t ui_menu_algo[DISPLAY_MAX_PHYSICAL_LENGTH];
 extern const uint8_t ui_menu_instr[DISPLAY_MAX_PHYSICAL_LENGTH];
 extern const uint8_t ui_set[DISPLAY_MAX_PHYSICAL_LENGTH];
-const uint8_t* ui_string_table[NUM_OF_UI_STRINGS];
+extern const uint8_t ui_set_algo[DISPLAY_MAX_PHYSICAL_LENGTH];
+extern const uint8_t ui_set_env[DISPLAY_MAX_PHYSICAL_LENGTH];
+extern const uint8_t* ui_string_table[NUM_OF_UI_STRINGS];
 uint8_t ui_menu_amp_converted[UI_STRING_CONVERTED_SIZE];
 uint8_t ui_menu_ratio_converted[UI_STRING_CONVERTED_SIZE];
 uint8_t ui_menu_detune_converted[UI_STRING_CONVERTED_SIZE];
@@ -123,7 +130,9 @@ uint8_t ui_menu_lfo_converted[UI_STRING_CONVERTED_SIZE];
 uint8_t ui_menu_algo_converted[UI_STRING_CONVERTED_SIZE];
 uint8_t ui_menu_instr_converted[UI_STRING_CONVERTED_SIZE];
 uint8_t ui_menu_env_op_converted[UI_STRING_CONVERTED_SIZE];
-uint8_t ui_set_converted[UI_STRING_CONVERTED_SIZE ];
+uint8_t ui_set_converted[UI_STRING_CONVERTED_SIZE];
+uint8_t ui_set_algo_converted[UI_STRING_CONVERTED_SIZE];
+uint8_t ui_set_env_converted[UI_STRING_CONVERTED_SIZE];
 uint8_t* ui_string_table_converted[NUM_OF_UI_STRINGS];
 
 state present_state;
