@@ -12,7 +12,7 @@
 #include "synth.h"
 
 #define AUDIO_GPIO GPIOA
-#define AUDIO_SPI_CS_PIN GPIO_BSRR_BR4
+#define AUDIO_SPI_CS_PIN GPIO_PIN_4
 
 SPI_TypeDef* audio_spi;
 

@@ -16,6 +16,10 @@
 #define MAX_VOICES 8
 #define MAX_VOLUME 0x80		//changing this may require various changes in code
 #define MAX_VOLUME_BITS 7	//max volume represented by bit place
+#define MAX_RATIO 0x80
+#define MAX_POS_DETUNE 0x7F
+#define MAX_NEG_DETUNE 0x80
+#define MAX_ALGO 0x0B
 
 typedef struct OPERATOR {
 	uint8_t note_value;
@@ -64,10 +68,15 @@ static inline void cycle_envelope(uint8_t voice_index) {
 			}
 			break;
 		case DECAY:
-			if (op[op_index][voice_index].env_amp - op_decay_inc[op_index] < (op_sustain[op_index] << 8)
+			if (op[op_index][voice_index].env_amp - op_decay_inc[op_index] <= (op_sustain[op_index] << 8)
 					|| op[op_index][voice_index].env_amp < op_decay_inc[op_index]) {
 				op[op_index][voice_index].env_amp = (op_sustain[op_index] << 8);
-				op[op_index][voice_index].adsr_state = SUSTAIN;
+				if (op_sustain[op_index] == 0x00) {
+					op[op_index][voice_index].adsr_state = SILENT;
+				}
+				else {
+					op[op_index][voice_index].adsr_state = SUSTAIN;
+				}
 			}
 			else {
 				op[op_index][voice_index].env_amp -= op_decay_inc[op_index];

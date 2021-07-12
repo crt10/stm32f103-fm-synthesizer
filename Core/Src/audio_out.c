@@ -15,7 +15,7 @@ void init_audio_out(SPI_HandleTypeDef* hspi, TIM_HandleTypeDef *htim) {
 }
 
 void update_volume() {
-	AUDIO_GPIO->BSRR = AUDIO_SPI_CS_PIN;			//pull CS pin low
+	AUDIO_GPIO->BSRR = (AUDIO_SPI_CS_PIN << 16);	//pull CS pin low
 	audio_spi->DR = output_volume;					//write out data to SPI (assume SPI is not busy)
 	output_volume = synth_sample();
 	if (output_volume > 0x0FFF) {					//max possible volume with 12-bit dac

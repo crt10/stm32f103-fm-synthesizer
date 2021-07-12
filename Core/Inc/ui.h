@@ -47,6 +47,15 @@
 #define UI_PB0 GPIO_PIN_7
 #define UI_PB1 GPIO_PIN_8
 #define UI_PB2 GPIO_PIN_9
+#define UI_ROT_GPIO GPIOB
+#define UI_ROT0_A GPIO_PIN_12
+#define UI_ROT0_B GPIO_PIN_13
+#define UI_ROT1_A GPIO_PIN_14
+#define UI_ROT1_B GPIO_PIN_15
+#define UI_ROT2_A GPIO_PIN_3
+#define UI_ROT2_B GPIO_PIN_4
+#define UI_ROT3_A GPIO_PIN_5
+#define UI_ROT3_B GPIO_PIN_6
 
 extern const char* HEX_TO_STRING[];
 

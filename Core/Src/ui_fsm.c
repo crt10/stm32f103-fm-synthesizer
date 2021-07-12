@@ -112,9 +112,7 @@ const transition set_lfo_transitions[] = {
 const transition set_algo_transitions[] = {
 	{pb_0				, menu_algo			, select_menu_algo		},
 	{pb_1				, set_algo			, temp_set_algo			},
-	{pb_2				, set_algo			, change_inc_dec		},
-	{rot_inc			, set_algo			, inc_set_algo			},
-	{rot_dec			, set_algo			, dec_set_algo			},
+	{pb_2				, set_algo			, inc_set_algo			},
 	{invalid			, set_algo			, input_invalid			}
 };
 const transition set_instr_transitions[] = {
@@ -226,11 +224,11 @@ void input_invalid() {
 }
 
 void change_inc_dec() {
-	if (inc_dec == 0x01) {
-		inc_dec = 0x08;
+	if (inc_dec == INC_DEC_DEFAULT) {
+		inc_dec = INC_DEC_ALT;
 	}
 	else {
-		inc_dec = 0x01;
+		inc_dec = INC_DEC_DEFAULT;
 	}
 }
 
@@ -359,54 +357,179 @@ void enter_menu_instr() {
 }
 
 void inc_menu_env_op() {
-
+	if (++fsm_env_op == MAX_OPERATORS) {
+		fsm_env_op = 0x00;
+	}
+	enter_menu_env();
 }
+
 void inc_set_amp() {
-
+	op_amp[fsm_op] += inc_dec;
+	if (op_amp[fsm_op] > MAX_VOLUME) {
+		op_amp[fsm_op] = MAX_VOLUME;
+	}
+	enter_menu_amp();
 }
+
 void inc_set_ratio() {
-
+	if (inc_dec == INC_DEC_DEFAULT) {
+		op_ratio[fsm_op] += 0x01;
+	}
+	else {
+		op_ratio[fsm_op] += 0x10;
+	}
+	if (op_amp[fsm_op] > MAX_RATIO) {
+		op_amp[fsm_op] = MAX_RATIO;
+	}
+	enter_menu_ratio();
 }
+
 void inc_set_detune() {
-
+	op_detune[fsm_op] += inc_dec;
+	if (op_detune[fsm_op] > MAX_POS_DETUNE) {	//detune is negative
+		op_detune[fsm_op] += inc_dec;
+	}
+	else {										//detune is positive
+		op_detune[fsm_op] += inc_dec;
+		if (op_detune[fsm_op] > MAX_POS_DETUNE) {
+			op_detune[fsm_op] = MAX_POS_DETUNE;
+		}
+	}
+	enter_menu_detune();
 }
+
 void inc_set_env() {
-
+	switch (fsm_op) {
+	case 0x00:
+		op_attack[fsm_env_op] += inc_dec;
+		if (op_attack[fsm_env_op] > ENV_MAX_RATE) {
+			op_attack[fsm_env_op] = ENV_MAX_RATE;
+		}
+		op_attack_inc[i] = calculate_env_inc(op_attack[i]);
+		break;
+	case 0x01:
+		op_decay[fsm_env_op] += inc_dec;
+		if (op_decay[fsm_env_op] > ENV_MAX_RATE) {
+			op_decay[fsm_env_op] = ENV_MAX_RATE;
+		}
+		op_decay_inc[i] = calculate_env_inc(op_decay[i]);
+		break;
+	case 0x02:
+		op_sustain[fsm_env_op] += inc_dec;
+		if (op_sustain[fsm_env_op] > MAX_VOLUME) {
+			op_sustain[fsm_env_op] = MAX_VOLUME;
+		}
+		break;
+	case 0x03:
+		op_release[fsm_env_op] += inc_dec;
+		if (op_release[fsm_env_op] > ENV_MAX_RATE) {
+			op_release[fsm_env_op] = ENV_MAX_RATE;
+		}
+		op_release_inc[i] = calculate_env_inc(op_release[i]);
+		break;
+	default:
+		break;
+	}
+	enter_menu_env_op();
 }
+
 void inc_set_fdbk() {
 
 }
+
 void inc_set_lfo() {
 
 }
-void inc_set_algo() {
 
+void inc_set_algo() {
+	if (++algo == MAX_ALGO) {
+		algo = 0x00;
+	}
+	enter_menu_algo();
 }
+
 void inc_set_instr() {
 
 }
 
 void dec_set_amp() {
-
+	op_amp[fsm_op] -= inc_dec;
+	if (op_amp[fsm_op] > MAX_VOLUME) {
+		op_amp[fsm_op] = 0x00;
+	}
+	enter_menu_amp();
 }
+
 void dec_set_ratio() {
-
+	if (inc_dec == INC_DEC_DEFAULT) {
+		op_ratio[fsm_op] -= 0x01;
+	}
+	else {
+		op_ratio[fsm_op] -= 0x10;
+	}
+	if (op_amp[fsm_op] > MAX_RATIO || op_amp[fsm_op] == 0x00) {
+		op_amp[fsm_op] = 0x01;
+	}
+	enter_menu_ratio();
 }
+
 void dec_set_detune() {
-
+	op_detune[fsm_op] -= inc_dec;
+	if (op_detune[fsm_op] < MAX_NEG_DETUNE) {	//detune is positive
+		op_detune[fsm_op] -= inc_dec;
+	}
+	else {										//detune is negative
+		op_detune[fsm_op] -= inc_dec;
+		if (op_detune[fsm_op] < MAX_NEG_DETUNE) {
+			op_detune[fsm_op] = MAX_NEG_DETUNE;
+		}
+	}
+	enter_menu_detune();
 }
+
 void dec_set_env() {
-
+	switch (fsm_op) {
+	case 0x00:
+		op_attack[fsm_env_op] -= inc_dec;
+		if (op_attack[fsm_env_op] > ENV_MAX_RATE || op_attack[fsm_env_op] == 0x00) {
+			op_attack[fsm_env_op] = 0x01;
+		}
+		op_attack_inc[i] = calculate_env_inc(op_attack[i]);
+		break;
+	case 0x01:
+		op_decay[fsm_env_op] -= inc_dec;
+		if (op_decay[fsm_env_op] > ENV_MAX_RATE || op_decay[fsm_env_op] == 0x00) {
+			op_decay[fsm_env_op] = 0x01;
+		}
+		op_decay_inc[i] = calculate_env_inc(op_decay[i]);
+		break;
+	case 0x02:
+		op_sustain[fsm_env_op] -= inc_dec;
+		if (op_sustain[fsm_env_op] > MAX_VOLUME) {
+			op_sustain[fsm_env_op] = 0x00;
+		}
+		break;
+	case 0x03:
+		op_release[fsm_env_op] -= inc_dec;
+		if (op_release[fsm_env_op] > ENV_MAX_RATE || op_release[fsm_env_op] == 0x00) {
+			op_release[fsm_env_op] = 0x01;
+		}
+		op_release_inc[i] = calculate_env_inc(op_release[i]);
+		break;
+	default:
+		break;
+	}
+	enter_menu_env_op();
 }
+
 void dec_set_fdbk() {
 
 }
+
 void dec_set_lfo() {
 
 }
-void dec_set_algo() {
 
-}
 void dec_set_instr() {
 
 }

@@ -325,7 +325,7 @@ static void MX_DMA_Init(void)
 
   /* DMA interrupt init */
   /* DMA1_Channel4_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(DMA1_Channel4_IRQn, 0, 0);
+  HAL_NVIC_SetPriority(DMA1_Channel4_IRQn, 1, 0);
   HAL_NVIC_EnableIRQ(DMA1_Channel4_IRQn);
 
 }
@@ -353,10 +353,14 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : PB12 PB13 PB14 PB15
-                           PB3 PB4 PB5 PB6 */
-  GPIO_InitStruct.Pin = GPIO_PIN_12|GPIO_PIN_13|GPIO_PIN_14|GPIO_PIN_15
-                          |GPIO_PIN_3|GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_6;
+  /*Configure GPIO pins : PB12 PB14 PB3 PB5 */
+  GPIO_InitStruct.Pin = GPIO_PIN_12|GPIO_PIN_14|GPIO_PIN_3|GPIO_PIN_5;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : PB13 PB15 PB4 PB6 */
+  GPIO_InitStruct.Pin = GPIO_PIN_13|GPIO_PIN_15|GPIO_PIN_4|GPIO_PIN_6;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
@@ -368,8 +372,14 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
   /* EXTI interrupt init*/
-  HAL_NVIC_SetPriority(EXTI9_5_IRQn, 0, 0);
+  HAL_NVIC_SetPriority(EXTI3_IRQn, 1, 0);
+  HAL_NVIC_EnableIRQ(EXTI3_IRQn);
+
+  HAL_NVIC_SetPriority(EXTI9_5_IRQn, 1, 0);
   HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
+
+  HAL_NVIC_SetPriority(EXTI15_10_IRQn, 1, 0);
+  HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
 
 }
 
@@ -384,6 +394,46 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
 		break;
 	case UI_PB2:
 		fsm(pb_2);
+		break;
+	case UI_ROT0_A:
+		fsm_change_op(0);
+		if ((UI_ROT_GPIO->IDR & (UI_ROT0_A | UI_ROT0_B)) == (UI_ROT0_A | UI_ROT0_B)
+			|| !(UI_ROT_GPIO->IDR & (UI_ROT0_A | UI_ROT0_B))) {
+			fsm(rot_dec);
+		}
+		else {
+			fsm(rot_inc);
+		}
+		break;
+	case UI_ROT1_A:
+		fsm_change_op(1);
+		if ((UI_ROT_GPIO->IDR & (UI_ROT1_A | UI_ROT1_B)) == (UI_ROT1_A | UI_ROT1_B)
+			|| !(UI_ROT_GPIO->IDR & (UI_ROT1_A | UI_ROT1_B))) {
+			fsm(rot_dec);
+		}
+		else {
+			fsm(rot_inc);
+		}
+		break;
+	case UI_ROT2_A:
+		fsm_change_op(2);
+		if ((UI_ROT_GPIO->IDR & (UI_ROT2_A | UI_ROT2_B)) == (UI_ROT2_A | UI_ROT2_B)
+			|| !(UI_ROT_GPIO->IDR & (UI_ROT2_A | UI_ROT2_B))) {
+			fsm(rot_dec);
+		}
+		else {
+			fsm(rot_inc);
+		}
+		break;
+	case UI_ROT3_A:
+		fsm_change_op(3);
+		if ((UI_ROT_GPIO->IDR & (UI_ROT3_A | UI_ROT3_B)) == (UI_ROT3_A | UI_ROT3_B)
+			|| !(UI_ROT_GPIO->IDR & (UI_ROT3_A | UI_ROT3_B))) {
+			fsm(rot_dec);
+		}
+		else {
+			fsm(rot_inc);
+		}
 		break;
 	}
 }

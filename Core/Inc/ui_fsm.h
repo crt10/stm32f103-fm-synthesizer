@@ -21,6 +21,8 @@
  * 2 cmds are neede to update the DDRAM address, hence the (2*6). */
 #define UI_STRING_CONVERTED_SIZE DISPLAY_MAX_LINES*DISPLAY_MAX_PHYSICAL_LENGTH*6 + (2*6)
 #define SECOND_LINE_START_INDEX DISPLAY_MAX_PHYSICAL_LENGTH*6 + (2*6)
+#define INC_DEC_DEFAULT 0x01
+#define INC_DEC_ALT 0x08
 
 typedef void (* transition_fn) ();
 typedef enum {
@@ -77,7 +79,6 @@ void dec_set_detune();
 void dec_set_env();
 void dec_set_fdbk();
 void dec_set_lfo();
-void dec_set_algo();
 void dec_set_instr();
 
 void temp_set_amp();

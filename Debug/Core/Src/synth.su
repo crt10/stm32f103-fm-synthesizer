@@ -1,4 +1,4 @@
-synth.h:98:22:modulate	20	static
+synth.h:107:22:modulate	20	static
 synth.c:10:6:init_synth	144	static
 synth.c:30:6:clear_voices	0	static
 synth.c:36:6:add_voice	40	static
