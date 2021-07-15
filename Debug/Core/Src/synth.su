@@ -2,5 +2,5 @@ synth.h:107:22:modulate	20	static
 synth.c:10:6:init_synth	144	static
 synth.c:30:6:clear_voices	0	static
 synth.c:36:6:add_voice	40	static
-synth.c:82:6:release_voice	0	static
-synth.c:94:9:synth_sample	32	static
+synth.c:84:6:release_voice	0	static
+synth.c:96:9:synth_sample	32	static

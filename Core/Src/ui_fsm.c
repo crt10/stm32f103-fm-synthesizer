@@ -264,72 +264,36 @@ void select_menu_instr() {
 }
 
 void enter_menu_amp() {
-	char params[DISPLAY_MAX_PHYSICAL_LENGTH+1] = "";
-	for (uint8_t op = 0; op < MAX_OPERATORS; op++) {
-		strcat(params, HEX_TO_STRING[op_amp[op]]);
+	for (uint8_t i = 0; i < MAX_OPERATORS; i++) {
+		temp[i] = op_amp[i];
 	}
-	uint8_t index = SECOND_LINE_START_INDEX;
-	for (uint8_t i = 0; i < DISPLAY_MAX_PHYSICAL_LENGTH; i++) {
-		display_convert_data(
-			params[i], ui_set_converted, &index
-		);
-	}
-	display_i2c_dma_write(ui_set_converted, UI_STRING_CONVERTED_SIZE);
+	display_update_menu_amp();
 }
 
 void enter_menu_ratio() {
-	char params[DISPLAY_MAX_PHYSICAL_LENGTH+1] = "";
-	for (uint8_t op = 0; op < MAX_OPERATORS; op++) {
-		strcat(params, HEX_TO_STRING[op_ratio[op]]);
+	for (uint8_t i = 0; i < MAX_OPERATORS; i++) {
+		temp[i] = op_ratio[i];
 	}
-	uint8_t index = SECOND_LINE_START_INDEX;
-	for (uint8_t i = 0; i < DISPLAY_MAX_PHYSICAL_LENGTH; i++) {
-		display_convert_data(
-			params[i], ui_set_converted, &index
-		);
-	}
-	display_i2c_dma_write(ui_set_converted, UI_STRING_CONVERTED_SIZE);
+	display_update_menu_ratio();
 }
 
 void enter_menu_detune() {
-	char params[DISPLAY_MAX_PHYSICAL_LENGTH+1] = "";
-	for (uint8_t op = 0; op < MAX_OPERATORS; op++) {
-		strcat(params, HEX_TO_STRING[op_detune[op]]);
+	for (uint8_t i = 0; i < MAX_OPERATORS; i++) {
+		temp[i] = op_detune[i];
 	}
-	uint8_t index = SECOND_LINE_START_INDEX;
-	for (uint8_t i = 0; i < DISPLAY_MAX_PHYSICAL_LENGTH; i++) {
-		display_convert_data(
-			params[i], ui_set_converted, &index
-		);
-	}
-	display_i2c_dma_write(ui_set_converted, UI_STRING_CONVERTED_SIZE);
+	display_update_menu_detune();
 }
 
 void enter_menu_env() {
-	char params[DISPLAY_MAX_PHYSICAL_LENGTH+1] = "";
-	strcat(params, HEX_TO_STRING[fsm_env_op]);
-	uint8_t index = SECOND_LINE_START_INDEX;
-	for (uint8_t i = 0; i < 4; i++) {
-		display_convert_data(
-			params[i], ui_menu_env_op_converted, &index
-		);
-	}
-	display_i2c_dma_write(ui_menu_env_op_converted, UI_STRING_CONVERTED_SIZE);
+	display_update_menu_env();
 }
 
 void enter_menu_env_op() {
-	char params[DISPLAY_MAX_PHYSICAL_LENGTH+1] = "";
-	strcat(params, HEX_TO_STRING[op_attack[fsm_env_op]]);
-	strcat(params, HEX_TO_STRING[op_decay[fsm_env_op]]);
-	strcat(params, HEX_TO_STRING[op_sustain[fsm_env_op]]);
-	strcat(params, HEX_TO_STRING[op_release[fsm_env_op]]);
-	uint8_t index = SECOND_LINE_START_INDEX;
-	for (uint8_t i = 0; i < DISPLAY_MAX_PHYSICAL_LENGTH; i++) {
-		display_convert_data(
-			params[i], ui_set_env_converted, &index
-		);
-	}
-	display_i2c_dma_write(ui_set_env_converted, UI_STRING_CONVERTED_SIZE);
+	temp[0] = op_attack[fsm_env_op];
+	temp[1] = op_decay[fsm_env_op];
+	temp[2] = op_sustain[fsm_env_op];
+	temp[3] = op_release[fsm_env_op];
+	display_update_menu_env_op();
 }
 
 void enter_menu_fdbk() {
@@ -341,15 +305,8 @@ void enter_menu_lfo() {
 }
 
 void enter_menu_algo() {
-	char params[DISPLAY_MAX_PHYSICAL_LENGTH+1] = "";
-	strcat(params, HEX_TO_STRING[algo]);
-	uint8_t index = SECOND_LINE_START_INDEX;
-	for (uint8_t i = 0; i < 4; i++) {
-		display_convert_data(
-			params[i], ui_set_algo_converted, &index
-		);
-	}
-	display_i2c_dma_write(ui_set_algo_converted, UI_STRING_CONVERTED_SIZE);
+	temp[0] = algo;
+	display_update_menu_algo();
 }
 
 void enter_menu_instr() {
@@ -360,7 +317,7 @@ void inc_menu_env_op() {
 	if (++fsm_env_op == MAX_OPERATORS) {
 		fsm_env_op = 0x00;
 	}
-	enter_menu_env();
+	display_update_menu_env();
 }
 
 void inc_set_amp() {
@@ -368,7 +325,7 @@ void inc_set_amp() {
 	if (op_amp[fsm_op] > MAX_VOLUME) {
 		op_amp[fsm_op] = MAX_VOLUME;
 	}
-	enter_menu_amp();
+	display_update_menu_amp();
 }
 
 void inc_set_ratio() {
@@ -378,24 +335,23 @@ void inc_set_ratio() {
 	else {
 		op_ratio[fsm_op] += 0x10;
 	}
-	if (op_amp[fsm_op] > MAX_RATIO) {
-		op_amp[fsm_op] = MAX_RATIO;
+	if (op_ratio[fsm_op] > MAX_RATIO) {
+		op_ratio[fsm_op] = MAX_RATIO;
 	}
-	enter_menu_ratio();
+	display_update_menu_ratio();
 }
 
 void inc_set_detune() {
-	op_detune[fsm_op] += inc_dec;
-	if (op_detune[fsm_op] > MAX_POS_DETUNE) {	//detune is negative
+	if ((uint8_t)op_detune[fsm_op] > MAX_POS_DETUNE) {	//detune is negative
 		op_detune[fsm_op] += inc_dec;
 	}
 	else {										//detune is positive
 		op_detune[fsm_op] += inc_dec;
-		if (op_detune[fsm_op] > MAX_POS_DETUNE) {
+		if ((uint8_t)op_detune[fsm_op] > MAX_POS_DETUNE) {
 			op_detune[fsm_op] = MAX_POS_DETUNE;
 		}
 	}
-	enter_menu_detune();
+	display_update_menu_detune();
 }
 
 void inc_set_env() {
@@ -405,14 +361,14 @@ void inc_set_env() {
 		if (op_attack[fsm_env_op] > ENV_MAX_RATE) {
 			op_attack[fsm_env_op] = ENV_MAX_RATE;
 		}
-		op_attack_inc[i] = calculate_env_inc(op_attack[i]);
+		op_attack_inc[fsm_env_op] = calculate_env_inc(op_attack[fsm_env_op]);
 		break;
 	case 0x01:
 		op_decay[fsm_env_op] += inc_dec;
 		if (op_decay[fsm_env_op] > ENV_MAX_RATE) {
 			op_decay[fsm_env_op] = ENV_MAX_RATE;
 		}
-		op_decay_inc[i] = calculate_env_inc(op_decay[i]);
+		op_decay_inc[fsm_env_op] = calculate_env_inc(op_decay[fsm_env_op]);
 		break;
 	case 0x02:
 		op_sustain[fsm_env_op] += inc_dec;
@@ -425,12 +381,12 @@ void inc_set_env() {
 		if (op_release[fsm_env_op] > ENV_MAX_RATE) {
 			op_release[fsm_env_op] = ENV_MAX_RATE;
 		}
-		op_release_inc[i] = calculate_env_inc(op_release[i]);
+		op_release_inc[fsm_env_op] = calculate_env_inc(op_release[fsm_env_op]);
 		break;
 	default:
 		break;
 	}
-	enter_menu_env_op();
+	display_update_menu_env_op();
 }
 
 void inc_set_fdbk() {
@@ -445,7 +401,7 @@ void inc_set_algo() {
 	if (++algo == MAX_ALGO) {
 		algo = 0x00;
 	}
-	enter_menu_algo();
+	display_update_menu_algo();
 }
 
 void inc_set_instr() {
@@ -457,7 +413,7 @@ void dec_set_amp() {
 	if (op_amp[fsm_op] > MAX_VOLUME) {
 		op_amp[fsm_op] = 0x00;
 	}
-	enter_menu_amp();
+	display_update_menu_amp();
 }
 
 void dec_set_ratio() {
@@ -467,24 +423,23 @@ void dec_set_ratio() {
 	else {
 		op_ratio[fsm_op] -= 0x10;
 	}
-	if (op_amp[fsm_op] > MAX_RATIO || op_amp[fsm_op] == 0x00) {
-		op_amp[fsm_op] = 0x01;
+	if (op_ratio[fsm_op] > MAX_RATIO || op_ratio[fsm_op] == 0x00) {
+		op_ratio[fsm_op] = 0x01;
 	}
-	enter_menu_ratio();
+	display_update_menu_ratio();
 }
 
 void dec_set_detune() {
-	op_detune[fsm_op] -= inc_dec;
-	if (op_detune[fsm_op] < MAX_NEG_DETUNE) {	//detune is positive
+	if ((uint8_t)op_detune[fsm_op] < MAX_NEG_DETUNE) {	//detune is positive
 		op_detune[fsm_op] -= inc_dec;
 	}
 	else {										//detune is negative
 		op_detune[fsm_op] -= inc_dec;
-		if (op_detune[fsm_op] < MAX_NEG_DETUNE) {
+		if ((uint8_t)op_detune[fsm_op] < MAX_NEG_DETUNE) {
 			op_detune[fsm_op] = MAX_NEG_DETUNE;
 		}
 	}
-	enter_menu_detune();
+	display_update_menu_detune();
 }
 
 void dec_set_env() {
@@ -494,14 +449,14 @@ void dec_set_env() {
 		if (op_attack[fsm_env_op] > ENV_MAX_RATE || op_attack[fsm_env_op] == 0x00) {
 			op_attack[fsm_env_op] = 0x01;
 		}
-		op_attack_inc[i] = calculate_env_inc(op_attack[i]);
+		op_attack_inc[fsm_env_op] = calculate_env_inc(op_attack[fsm_env_op]);
 		break;
 	case 0x01:
 		op_decay[fsm_env_op] -= inc_dec;
 		if (op_decay[fsm_env_op] > ENV_MAX_RATE || op_decay[fsm_env_op] == 0x00) {
 			op_decay[fsm_env_op] = 0x01;
 		}
-		op_decay_inc[i] = calculate_env_inc(op_decay[i]);
+		op_decay_inc[fsm_env_op] = calculate_env_inc(op_decay[fsm_env_op]);
 		break;
 	case 0x02:
 		op_sustain[fsm_env_op] -= inc_dec;
@@ -514,12 +469,12 @@ void dec_set_env() {
 		if (op_release[fsm_env_op] > ENV_MAX_RATE || op_release[fsm_env_op] == 0x00) {
 			op_release[fsm_env_op] = 0x01;
 		}
-		op_release_inc[i] = calculate_env_inc(op_release[i]);
+		op_release_inc[fsm_env_op] = calculate_env_inc(op_release[fsm_env_op]);
 		break;
 	default:
 		break;
 	}
-	enter_menu_env_op();
+	display_update_menu_env_op();
 }
 
 void dec_set_fdbk() {
@@ -535,26 +490,156 @@ void dec_set_instr() {
 }
 
 void temp_set_amp() {
-
+	for (uint8_t i = 0; i < MAX_OPERATORS; i++) {
+		uint8_t temp2 = temp[i];
+		temp[i] = op_amp[i];
+		op_amp[i] = temp2;
+	}
+	display_update_menu_amp();
 }
+
 void temp_set_ratio() {
-
+	for (uint8_t i = 0; i < MAX_OPERATORS; i++) {
+		uint8_t temp2 = temp[i];
+		temp[i] = op_ratio[i];
+		op_ratio[i] = temp2;
+	}
+	display_update_menu_ratio();
 }
+
 void temp_set_detune() {
-
+	for (uint8_t i = 0; i < MAX_OPERATORS; i++) {
+		uint8_t temp2 = temp[i];
+		temp[i] = op_detune[i];
+		op_detune[i] = temp2;
+	}
+	display_update_menu_detune();
 }
+
 void temp_set_env() {
-
+	uint8_t temp2;
+	temp2 = temp[0];
+	temp[0] = op_attack[fsm_env_op];
+	op_attack[fsm_env_op] = temp2;
+	temp2 = temp[1];
+	temp[1] = op_decay[fsm_env_op];
+	op_decay[fsm_env_op] = temp2;
+	temp2 = temp[2];
+	temp[2] = op_sustain[fsm_env_op];
+	op_sustain[fsm_env_op] = temp2;
+	temp2 = temp[3];
+	temp[3] = op_release[fsm_env_op];
+	op_release[fsm_env_op] = temp2;
+	display_update_menu_env_op();
 }
+
 void temp_set_fdbk() {
 
 }
+
 void temp_set_lfo() {
 
 }
+
 void temp_set_algo() {
+	uint8_t temp2 = temp[0];
+	temp[0] = algo;
+	algo = temp2;
+}
+
+void temp_set_instr() {
 
 }
-void temp_set_instr() {
+
+void display_update_menu_amp() {
+	char params[DISPLAY_MAX_PHYSICAL_LENGTH+1] = "";
+	for (uint8_t op = 0; op < MAX_OPERATORS; op++) {
+		strcat(params, HEX_TO_STRING[op_amp[op]]);
+	}
+	uint8_t index = SECOND_LINE_START_INDEX;
+	for (uint8_t i = 0; i < DISPLAY_MAX_PHYSICAL_LENGTH; i++) {
+		display_convert_data(
+			params[i], ui_set_converted, &index
+		);
+	}
+	display_i2c_dma_write(ui_set_converted, UI_STRING_CONVERTED_SIZE);
+}
+
+void display_update_menu_ratio() {
+	char params[DISPLAY_MAX_PHYSICAL_LENGTH+1] = "";
+	for (uint8_t op = 0; op < MAX_OPERATORS; op++) {
+		strcat(params, HEX_TO_STRING_RATIO[op_ratio[op]]);
+	}
+	uint8_t index = SECOND_LINE_START_INDEX;
+	for (uint8_t i = 0; i < DISPLAY_MAX_PHYSICAL_LENGTH; i++) {
+		display_convert_data(
+			params[i], ui_set_converted, &index
+		);
+	}
+	display_i2c_dma_write(ui_set_converted, UI_STRING_CONVERTED_SIZE);
+}
+
+void display_update_menu_detune() {
+	char params[DISPLAY_MAX_PHYSICAL_LENGTH+1] = "";
+	for (uint8_t op = 0; op < MAX_OPERATORS; op++) {
+		strcat(params, HEX_TO_STRING_DETUNE[(uint8_t)op_detune[op]]);
+	}
+	uint8_t index = SECOND_LINE_START_INDEX;
+	for (uint8_t i = 0; i < DISPLAY_MAX_PHYSICAL_LENGTH; i++) {
+		display_convert_data(
+			params[i], ui_set_converted, &index
+		);
+	}
+	display_i2c_dma_write(ui_set_converted, UI_STRING_CONVERTED_SIZE);
+}
+
+void display_update_menu_env() {
+	char params[DISPLAY_MAX_PHYSICAL_LENGTH+1] = "";
+	strcat(params, HEX_TO_STRING[fsm_env_op]);
+	uint8_t index = SECOND_LINE_START_INDEX;
+	for (uint8_t i = 0; i < 4; i++) {
+		display_convert_data(
+			params[i], ui_menu_env_op_converted, &index
+		);
+	}
+	display_i2c_dma_write(ui_menu_env_op_converted, UI_STRING_CONVERTED_SIZE);
+}
+
+void display_update_menu_env_op() {
+	char params[DISPLAY_MAX_PHYSICAL_LENGTH+1] = "";
+	strcat(params, HEX_TO_STRING[op_attack[fsm_env_op]]);
+	strcat(params, HEX_TO_STRING[op_decay[fsm_env_op]]);
+	strcat(params, HEX_TO_STRING[op_sustain[fsm_env_op]]);
+	strcat(params, HEX_TO_STRING[op_release[fsm_env_op]]);
+	uint8_t index = SECOND_LINE_START_INDEX;
+	for (uint8_t i = 0; i < DISPLAY_MAX_PHYSICAL_LENGTH; i++) {
+		display_convert_data(
+			params[i], ui_set_env_converted, &index
+		);
+	}
+	display_i2c_dma_write(ui_set_env_converted, UI_STRING_CONVERTED_SIZE);
+}
+
+void display_update_menu_fdbk() {
+
+}
+
+void display_update_menu_lfo() {
+
+}
+
+void display_update_menu_algo() {
+	char params[DISPLAY_MAX_PHYSICAL_LENGTH+1] = "";
+	strcat(params, HEX_TO_STRING[algo]);
+	uint8_t index = SECOND_LINE_START_INDEX;
+	for (uint8_t i = 0; i < 4; i++) {
+		display_convert_data(
+			params[i], ui_set_algo_converted, &index
+		);
+	}
+	display_i2c_dma_write(ui_set_algo_converted, UI_STRING_CONVERTED_SIZE);
+}
+
+void display_update_menu_instr() {
 
 }

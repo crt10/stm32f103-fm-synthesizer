@@ -58,6 +58,8 @@
 #define UI_ROT3_B GPIO_PIN_6
 
 extern const char* HEX_TO_STRING[];
+extern const char* HEX_TO_STRING_RATIO[];
+extern const char* HEX_TO_STRING_DETUNE[];
 
 I2C_HandleTypeDef* display_i2c;
 

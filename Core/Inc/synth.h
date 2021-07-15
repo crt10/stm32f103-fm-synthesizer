@@ -38,7 +38,7 @@ typedef struct OPERATOR {
 OPERATOR op[MAX_OPERATORS][MAX_VOICES];
 uint8_t op_amp[MAX_OPERATORS];			//operator amplitude
 uint8_t op_ratio[MAX_OPERATORS];		//operator pitch (frequency) multiplier
-uint8_t op_detune[MAX_OPERATORS];		//operator pitch detune
+int8_t op_detune[MAX_OPERATORS];		//operator pitch detune
 uint8_t op_attack[MAX_OPERATORS];		//attack rate
 uint8_t op_decay[MAX_OPERATORS];		//decay rate
 uint8_t op_sustain[MAX_OPERATORS];		//sustain level

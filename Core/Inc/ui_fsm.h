@@ -145,5 +145,14 @@ uint8_t temp[MAX_PARAMS];
 void init_ui(I2C_HandleTypeDef* hi2c);
 void fsm(input key);
 static inline void fsm_change_op(uint8_t op) { fsm_op = op; };
+void display_update_menu_amp();
+void display_update_menu_ratio();
+void display_update_menu_detune();
+void display_update_menu_env();
+void display_update_menu_env_op();
+void display_update_menu_fdbk();
+void display_update_menu_lfo();
+void display_update_menu_algo();
+void display_update_menu_instr();
 
 #endif /* INC_UI_FSM_H_ */
