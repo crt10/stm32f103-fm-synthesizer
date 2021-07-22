@@ -87,19 +87,21 @@ void process_midi_byte() {
 			}
 			break;
 		case 0xF0:												//system (unimplemented)
-			if (status == 0xFF) {									//system reset
-				data[0] = -1;
-				data[1] = -1;
-				midi_buffer_read = 0;
-				midi_buffer_write = 0;
-				clear_voices();
-			}
+			reset();
 			break;
 		default:
-			__NOP();
+			reset();
 		}
 	}
 	midi_buffer_read = (midi_buffer_read + 1) & (RING_BUFFER_SIZE - 1);
+}
+
+void reset() {
+	data[0] = -1;
+	data[1] = -1;
+	midi_buffer_read = 0;
+	midi_buffer_write = 0;
+	clear_voices();
 }
 
 void note_off() {
@@ -115,21 +117,26 @@ void note_on() {
 }
 
 void polyphonic_pressure() {
-
+	reset();
 }
 
 void control_change() {
-
+	reset();
 }
 
 void program_change() {
-
+	reset();
 }
 
 void channel_pressure() {
-
+	reset();
 }
 
 void pitch_bend() {
-
+	int16_t pitch = ((int16_t)data[1] << 7) | data[0];
+	pitch -= MIDI_PITCH_ZERO;
+	pitch >>= 7;
+	for (uint8_t op_index = 0; op_index < MAX_OPERATORS; op_index++) {
+		op_pitch_bend[op_index] = (op_ratio[op_index] * pitch) >> 4;
+	}
 }

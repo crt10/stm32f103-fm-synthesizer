@@ -445,7 +445,6 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 
 void sample() {
 	TIM2->SR = 0;
-	HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_8);
 	update_volume();
 }
 

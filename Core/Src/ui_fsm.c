@@ -28,7 +28,7 @@ const transition menu_detune_transitions[] = {
 const transition menu_env_transitions[] = {
 	{pb_0				, menu_detune		, select_menu_detune	},
 	{pb_1				, menu_env_op		, enter_menu_env		},
-	{pb_2				, menu_fdbk			, select_menu_fdbk		},
+	{pb_2				, menu_algo			, select_menu_algo		},
 	{invalid			, menu_env			, input_invalid			}
 };
 const transition menu_env_op_transitions[] = {
@@ -37,20 +37,8 @@ const transition menu_env_op_transitions[] = {
 	{pb_2				, menu_env_op		, inc_menu_env_op		},
 	{invalid			, menu_env_op		, input_invalid			}
 };
-const transition menu_fdbk_transitions[] = {
-	{pb_0				, menu_env			, select_menu_env		},
-	{pb_1				, set_fdbk			, enter_menu_fdbk		},
-	{pb_2				, menu_lfo			, select_menu_lfo		},
-	{invalid			, menu_fdbk			, input_invalid			}
-};
-const transition menu_lfo_transitions[] = {
-	{pb_0				, menu_fdbk			, select_menu_fdbk		},
-	{pb_1				, set_lfo			, enter_menu_lfo		},
-	{pb_2				, menu_algo			, select_menu_algo		},
-	{invalid			, menu_env			, input_invalid			}
-};
 const transition menu_algo_transitions[] = {
-	{pb_0				, menu_lfo			, select_menu_lfo		},
+	{pb_0				, menu_env			, select_menu_env		},
 	{pb_1				, set_algo			, enter_menu_algo		},
 	{pb_2				, menu_instr		, select_menu_instr		},
 	{invalid			, menu_algo			, input_invalid			}
@@ -93,22 +81,6 @@ const transition set_env_transitions[] = {
 	{rot_dec			, set_env			, dec_set_env			},
 	{invalid			, set_env			, input_invalid			}
 };
-const transition set_fdbk_transitions[] = {
-	{pb_0				, menu_fdbk			, select_menu_fdbk		},
-	{pb_1				, set_fdbk			, temp_set_fdbk			},
-	{pb_2				, set_fdbk			, change_inc_dec		},
-	{rot_inc			, set_fdbk			, inc_set_fdbk			},
-	{rot_dec			, set_fdbk			, dec_set_fdbk			},
-	{invalid			, set_fdbk			, input_invalid			}
-};
-const transition set_lfo_transitions[] = {
-	{pb_0				, menu_lfo			, select_menu_lfo		},
-	{pb_1				, set_lfo			, temp_set_lfo			},
-	{pb_2				, set_lfo			, change_inc_dec		},
-	{rot_inc			, set_lfo			, inc_set_lfo			},
-	{rot_dec			, set_lfo			, dec_set_lfo			},
-	{invalid			, set_lfo			, input_invalid			}
-};
 const transition set_algo_transitions[] = {
 	{pb_0				, menu_algo			, select_menu_algo		},
 	{pb_1				, set_algo			, temp_set_algo			},
@@ -129,16 +101,12 @@ const transition* fsm_transition_table[NUM_OF_STATES] = {
 	menu_detune_transitions,
 	menu_env_transitions,
 	menu_env_op_transitions,
-	menu_fdbk_transitions,
-	menu_lfo_transitions,
 	menu_algo_transitions,
 	menu_instr_transitions,
 	set_amp_transitions,
 	set_ratio_transitions,
 	set_detune_transitions,
 	set_env_transitions,
-	set_fdbk_transitions,
-	set_lfo_transitions,
 	set_algo_transitions,
 	set_instr_transitions,
 };
@@ -146,11 +114,9 @@ const transition* fsm_transition_table[NUM_OF_STATES] = {
 const uint8_t ui_menu_amp[DISPLAY_MAX_PHYSICAL_LENGTH] = "instr ~amp ratio";
 const uint8_t ui_menu_ratio[DISPLAY_MAX_PHYSICAL_LENGTH] = " amp ~ratio detu";
 const uint8_t ui_menu_detune[DISPLAY_MAX_PHYSICAL_LENGTH] = "tio ~detune env ";
-const uint8_t ui_menu_env[DISPLAY_MAX_PHYSICAL_LENGTH] = "etune ~env fdbk ";
+const uint8_t ui_menu_env[DISPLAY_MAX_PHYSICAL_LENGTH] = "etune ~env algo ";
 const uint8_t ui_menu_env_op[DISPLAY_MAX_PHYSICAL_LENGTH] = "SELECT OPERATOR:";
-const uint8_t ui_menu_fdbk[DISPLAY_MAX_PHYSICAL_LENGTH] = " env ~fdbk lfo a";
-const uint8_t ui_menu_lfo[DISPLAY_MAX_PHYSICAL_LENGTH] = " fdbk ~lfo algo ";
-const uint8_t ui_menu_algo[DISPLAY_MAX_PHYSICAL_LENGTH] = " lfo ~algo instr";
+const uint8_t ui_menu_algo[DISPLAY_MAX_PHYSICAL_LENGTH] = " env ~algo instr";
 const uint8_t ui_menu_instr[DISPLAY_MAX_PHYSICAL_LENGTH] = "algo ~instr amp ";
 const uint8_t ui_set[DISPLAY_MAX_PHYSICAL_LENGTH] = "OP1 OP2 OP3 OP4 ";
 const uint8_t ui_set_algo[DISPLAY_MAX_PHYSICAL_LENGTH] = "SELECT ALGO:    ";
@@ -161,8 +127,6 @@ const uint8_t* ui_string_table[NUM_OF_UI_STRINGS] = {
 	ui_menu_detune,
 	ui_menu_env,
 	ui_menu_env_op,
-	ui_menu_fdbk,
-	ui_menu_lfo,
 	ui_menu_algo,
 	ui_menu_instr,
 	ui_set,
@@ -175,8 +139,6 @@ uint8_t* ui_string_table_converted[NUM_OF_UI_STRINGS] = {
 	ui_menu_detune_converted,
 	ui_menu_env_converted,
 	ui_menu_env_op_converted,
-	ui_menu_fdbk_converted,
-	ui_menu_lfo_converted,
 	ui_menu_algo_converted,
 	ui_menu_instr_converted,
 	ui_set_converted,
@@ -247,14 +209,6 @@ void select_menu_env() {
 	display_i2c_dma_write(ui_menu_env_converted, UI_STRING_CONVERTED_SIZE);
 }
 
-void select_menu_fdbk() {
-	display_i2c_dma_write(ui_menu_fdbk_converted, UI_STRING_CONVERTED_SIZE);
-}
-
-void select_menu_lfo() {
-	display_i2c_dma_write(ui_menu_lfo_converted, UI_STRING_CONVERTED_SIZE);
-}
-
 void select_menu_algo() {
 	display_i2c_dma_write(ui_menu_algo_converted, UI_STRING_CONVERTED_SIZE);
 }
@@ -294,14 +248,6 @@ void enter_menu_env_op() {
 	temp[2] = op_sustain[fsm_env_op];
 	temp[3] = op_release[fsm_env_op];
 	display_update_menu_env_op();
-}
-
-void enter_menu_fdbk() {
-
-}
-
-void enter_menu_lfo() {
-
 }
 
 void enter_menu_algo() {
@@ -389,14 +335,6 @@ void inc_set_env() {
 	display_update_menu_env_op();
 }
 
-void inc_set_fdbk() {
-
-}
-
-void inc_set_lfo() {
-
-}
-
 void inc_set_algo() {
 	if (++algo == MAX_ALGO) {
 		algo = 0x00;
@@ -477,14 +415,6 @@ void dec_set_env() {
 	display_update_menu_env_op();
 }
 
-void dec_set_fdbk() {
-
-}
-
-void dec_set_lfo() {
-
-}
-
 void dec_set_instr() {
 
 }
@@ -531,14 +461,6 @@ void temp_set_env() {
 	temp[3] = op_release[fsm_env_op];
 	op_release[fsm_env_op] = temp2;
 	display_update_menu_env_op();
-}
-
-void temp_set_fdbk() {
-
-}
-
-void temp_set_lfo() {
-
 }
 
 void temp_set_algo() {
@@ -618,14 +540,6 @@ void display_update_menu_env_op() {
 		);
 	}
 	display_i2c_dma_write(ui_set_env_converted, UI_STRING_CONVERTED_SIZE);
-}
-
-void display_update_menu_fdbk() {
-
-}
-
-void display_update_menu_lfo() {
-
 }
 
 void display_update_menu_algo() {

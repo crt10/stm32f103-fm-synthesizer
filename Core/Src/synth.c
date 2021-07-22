@@ -13,6 +13,7 @@ void init_synth() {
 		op_amp[i] = MAX_VOLUME;						//default amplitude 128
 		op_ratio[i] = 0x10;							//default multiplier 1.0 (4 MSB integer, 4 LSB decimal)
 		op_detune[i] = 0x00;						//default detune 0
+		op_pitch_bend[i] = 0x00;					//default pitch bend 0
 		op_attack[i] = ENV_MAX_RATE;				//default attack 128
 		op_decay[i] = ENV_MAX_RATE;					//default decay 128
 		op_sustain[i] = MAX_VOLUME;					//default sustain 128
@@ -34,7 +35,7 @@ void clear_voices() {
 }
 
 void add_voice(uint8_t note_value) {
-	uint8_t voice_index, released_voice = -1;
+	uint8_t voice_index, released_voice = (uint8_t)-1;
 	for (voice_index = 0; voice_index < MAX_VOICES; voice_index++) {
 		if (op[0][voice_index].note_value == (uint8_t)-1) {										//find unused voice
 			break;
@@ -70,7 +71,6 @@ void add_voice(uint8_t note_value) {
 			op[op_index][voice_index].delta = calculate_delta(op[0][voice_index].freq);				//calculate and store delta
 			op[op_index][voice_index].delta += (int16_t)op_detune[op_index];						//offset with detune param
 		}
-
 		op[op_index][voice_index].volume = 0x00;												//reset volume to 0
 		op[op_index][voice_index].env_amp = op_attack_inc[op_index];							//start envelope amp with attack increment
 		if (op_attack_inc[op_index] == MAX_VOLUME << 8) {										//if attack rate is max
@@ -88,6 +88,9 @@ void release_voice(uint8_t note_value) {
 		if (op[0][voice_index].note_value == note_value) {
 			break;
 		}
+	}
+	if (voice_index == MAX_VOICES) {
+		return;
 	}
 	for (uint8_t op_index = 0; op_index < MAX_OPERATORS; op_index++) {
 		op[op_index][voice_index].adsr_state = RELEASE;

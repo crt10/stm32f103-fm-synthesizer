@@ -10,7 +10,7 @@
 
 #include "stm32f1xx_hal.h"
 
-//(0x00.01 * 44100)/256 = 0.67291259765 Hz increments
+//(0x00.01 * 44100)/256 = 0.6103515625 Hz increments
 #define SAMPLING_FREQ 44100
 #define TABLE_SAMPLE_SIZE 256
 

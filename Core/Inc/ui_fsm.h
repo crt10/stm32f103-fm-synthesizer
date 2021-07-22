@@ -13,7 +13,7 @@
 #include "ui.h"
 #include "synth.h"
 
-#define NUM_OF_STATES 17
+#define NUM_OF_STATES 13
 #define MAX_PARAMS 4
 #define NUM_OF_UI_STRINGS 12
 /* NOTE: 6 is the number of messages needed in order to send 1 data/cmd to the LCD
@@ -26,8 +26,8 @@
 
 typedef void (* transition_fn) ();
 typedef enum {
-	menu_amp, menu_ratio, menu_detune, menu_env, menu_env_op, menu_fdbk, menu_lfo, menu_algo, menu_instr,
-	set_amp, set_ratio, set_detune, set_env, set_fdbk, set_lfo, set_algo, set_instr
+	menu_amp, menu_ratio, menu_detune, menu_env, menu_env_op, menu_algo, menu_instr,
+	set_amp, set_ratio, set_detune, set_env, set_algo, set_instr
 } state;
 typedef enum {
 	pb_0, pb_1, pb_2,
@@ -48,8 +48,6 @@ void select_menu_amp();
 void select_menu_ratio();
 void select_menu_detune();
 void select_menu_env();
-void select_menu_fdbk();
-void select_menu_lfo();
 void select_menu_algo();
 void select_menu_instr();
 
@@ -58,8 +56,6 @@ void enter_menu_ratio();
 void enter_menu_detune();
 void enter_menu_env();
 void enter_menu_env_op();
-void enter_menu_fdbk();
-void enter_menu_lfo();
 void enter_menu_algo();
 void enter_menu_instr();
 
@@ -68,8 +64,6 @@ void inc_set_amp();
 void inc_set_ratio();
 void inc_set_detune();
 void inc_set_env();
-void inc_set_fdbk();
-void inc_set_lfo();
 void inc_set_algo();
 void inc_set_instr();
 
@@ -77,16 +71,12 @@ void dec_set_amp();
 void dec_set_ratio();
 void dec_set_detune();
 void dec_set_env();
-void dec_set_fdbk();
-void dec_set_lfo();
 void dec_set_instr();
 
 void temp_set_amp();
 void temp_set_ratio();
 void temp_set_detune();
 void temp_set_env();
-void temp_set_fdbk();
-void temp_set_lfo();
 void temp_set_algo();
 void temp_set_instr();
 
@@ -95,16 +85,12 @@ extern const transition menu_ratio_transitions[];
 extern const transition menu_detune_transitions[];
 extern const transition menu_env_transitions[];
 extern const transition menu_env_op_transitions[];
-extern const transition menu_fdbk_transitions[];
-extern const transition menu_lfo_transitions[];
 extern const transition menu_algo_transitions[];
 extern const transition menu_instr_transitions[];
 extern const transition set_amp_transitions[];
 extern const transition set_ratio_transitions[];
 extern const transition set_detune_transitions[];
 extern const transition set_env_transitions[];
-extern const transition set_fdbk_transitions[];
-extern const transition set_lfo_transitions[];
 extern const transition set_algo_transitions[];
 extern const transition set_instr_transitions[];
 extern const transition* fsm_transition_table[NUM_OF_STATES];
@@ -114,8 +100,6 @@ extern const uint8_t ui_menu_ratio[DISPLAY_MAX_PHYSICAL_LENGTH];
 extern const uint8_t ui_menu_detune[DISPLAY_MAX_PHYSICAL_LENGTH];
 extern const uint8_t ui_menu_env[DISPLAY_MAX_PHYSICAL_LENGTH];
 extern const uint8_t ui_menu_env_op[DISPLAY_MAX_PHYSICAL_LENGTH];
-extern const uint8_t ui_menu_fdbk[DISPLAY_MAX_PHYSICAL_LENGTH];
-extern const uint8_t ui_menu_lfo[DISPLAY_MAX_PHYSICAL_LENGTH];
 extern const uint8_t ui_menu_algo[DISPLAY_MAX_PHYSICAL_LENGTH];
 extern const uint8_t ui_menu_instr[DISPLAY_MAX_PHYSICAL_LENGTH];
 extern const uint8_t ui_set[DISPLAY_MAX_PHYSICAL_LENGTH];
@@ -126,8 +110,6 @@ uint8_t ui_menu_amp_converted[UI_STRING_CONVERTED_SIZE];
 uint8_t ui_menu_ratio_converted[UI_STRING_CONVERTED_SIZE];
 uint8_t ui_menu_detune_converted[UI_STRING_CONVERTED_SIZE];
 uint8_t ui_menu_env_converted[UI_STRING_CONVERTED_SIZE];
-uint8_t ui_menu_fdbk_converted[UI_STRING_CONVERTED_SIZE];
-uint8_t ui_menu_lfo_converted[UI_STRING_CONVERTED_SIZE];
 uint8_t ui_menu_algo_converted[UI_STRING_CONVERTED_SIZE];
 uint8_t ui_menu_instr_converted[UI_STRING_CONVERTED_SIZE];
 uint8_t ui_menu_env_op_converted[UI_STRING_CONVERTED_SIZE];
@@ -150,8 +132,6 @@ void display_update_menu_ratio();
 void display_update_menu_detune();
 void display_update_menu_env();
 void display_update_menu_env_op();
-void display_update_menu_fdbk();
-void display_update_menu_lfo();
 void display_update_menu_algo();
 void display_update_menu_instr();
 
