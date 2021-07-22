@@ -3,4 +3,4 @@ synth.c:10:6:init_synth	136	static
 synth.c:31:6:clear_voices	0	static
 synth.c:37:6:add_voice	40	static
 synth.c:85:6:release_voice	0	static
-synth.c:97:9:synth_sample	32	static
+synth.c:100:9:synth_sample	32	static

@@ -451,15 +451,22 @@ void temp_set_env() {
 	temp2 = temp[0];
 	temp[0] = op_attack[fsm_env_op];
 	op_attack[fsm_env_op] = temp2;
+	op_attack_inc[fsm_env_op] = calculate_env_inc(op_attack[fsm_env_op]);
+
 	temp2 = temp[1];
 	temp[1] = op_decay[fsm_env_op];
 	op_decay[fsm_env_op] = temp2;
+	op_decay_inc[fsm_env_op] = calculate_env_inc(op_decay[fsm_env_op]);
+
 	temp2 = temp[2];
 	temp[2] = op_sustain[fsm_env_op];
 	op_sustain[fsm_env_op] = temp2;
+
 	temp2 = temp[3];
 	temp[3] = op_release[fsm_env_op];
 	op_release[fsm_env_op] = temp2;
+	op_release_inc[fsm_env_op] = calculate_env_inc(op_release[fsm_env_op]);
+
 	display_update_menu_env_op();
 }
 
