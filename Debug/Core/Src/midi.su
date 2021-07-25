@@ -3,8 +3,8 @@ midi.c:21:6:process_midi_byte	24	static
 midi.c:99:6:reset	4	static
 midi.c:107:6:note_off	8	static
 midi.c:113:6:note_on	8	static
-midi.c:119:6:polyphonic_pressure	4	static
-midi.c:123:6:control_change	4	static
-midi.c:127:6:program_change	4	static
-midi.c:131:6:channel_pressure	4	static
-midi.c:135:6:pitch_bend	4	static
+midi.c:119:6:polyphonic_pressure	0	static
+midi.c:122:6:control_change	0	static
+midi.c:125:6:program_change	0	static
+midi.c:128:6:channel_pressure	0	static
+midi.c:131:6:pitch_bend	4	static

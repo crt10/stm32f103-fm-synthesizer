@@ -117,19 +117,15 @@ void note_on() {
 }
 
 void polyphonic_pressure() {
-	reset();
 }
 
 void control_change() {
-	reset();
 }
 
 void program_change() {
-	reset();
 }
 
 void channel_pressure() {
-	reset();
 }
 
 void pitch_bend() {

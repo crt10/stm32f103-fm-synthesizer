@@ -336,7 +336,7 @@ void inc_set_env() {
 }
 
 void inc_set_algo() {
-	if (++algo == MAX_ALGO) {
+	if (++algo == (MAX_ALGO + 1)) {
 		algo = 0x00;
 	}
 	display_update_menu_algo();
@@ -474,6 +474,7 @@ void temp_set_algo() {
 	uint8_t temp2 = temp[0];
 	temp[0] = algo;
 	algo = temp2;
+	display_update_menu_algo();
 }
 
 void temp_set_instr() {
