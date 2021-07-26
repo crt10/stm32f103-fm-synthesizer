@@ -438,9 +438,17 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
 	}
 }
 
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
-	midi_buffer_write = (midi_buffer_write + 1) & (RING_BUFFER_SIZE - 1);
-	HAL_UART_Receive_IT(huart, &midi_buffer[midi_buffer_write], 1);
+void midi_read() {
+	uint8_t midi_uart_stat = midi_uart->SR;
+	if ((midi_uart_stat & USART_SR_PE) |
+		(midi_uart_stat & USART_SR_FE) |
+		(midi_uart_stat & USART_SR_LBD)) {
+		midi_uart->DR;
+		reset();
+		return;
+	}
+	midi_buffer[midi_buffer_write] = midi_uart->DR;
+	++midi_buffer_write;
 }
 
 void sample() {

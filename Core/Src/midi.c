@@ -8,14 +8,18 @@
 #include "midi.h"
 
 void init_midi(UART_HandleTypeDef* huart) {
+	midi_uart = huart->Instance;
 	data[0] = -1;
 	data[1] = -1;
 	for (uint8_t i = 0; i < RING_BUFFER_SIZE; i++) {
 		midi_buffer[i] = -1;
+		if (i == RING_BUFFER_SIZE - 1) {
+			break;
+		}
 	}
 	midi_buffer_read = 0;
 	midi_buffer_write = 0;
-	HAL_UART_Receive_IT(huart, &midi_buffer[midi_buffer_write], 1);
+	midi_uart->CR1 |= USART_CR1_RXNEIE | USART_CR1_RE;		//enable reciever interrupt
 }
 
 void process_midi_byte() {
@@ -77,7 +81,7 @@ void process_midi_byte() {
 			data[0] = midi_in;
 			channel_pressure();
 			break;
-		case 0xE0:												//pitch bend (unimplemented)
+		case 0xE0:												//pitch bend
 			if (data[0] == (uint8_t)-1) {
 				data[0] = midi_in;
 			}

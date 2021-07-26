@@ -2,5 +2,6 @@ main.c:134:6:SystemClock_Config	88	static,ignoring_inline_asm
 main.c:80:5:main	48	static,ignoring_inline_asm
 main.c:387:6:HAL_GPIO_EXTI_Callback	0	static
 main.c:441:6:HAL_UART_RxCpltCallback	4	static
-main.c:446:6:sample	0	static
-main.c:457:6:Error_Handler	0	static,ignoring_inline_asm
+main.c:446:6:midi_read	4	static
+main.c:459:6:sample	0	static
+main.c:470:6:Error_Handler	0	static,ignoring_inline_asm

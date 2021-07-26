@@ -11,9 +11,10 @@
 #include "stm32f1xx_hal.h"
 #include "synth.h"
 
-#define RING_BUFFER_SIZE 128	//should be exponentials of 2 and lower than 256. EX: 4, 8, 16, 32, etc.
+#define RING_BUFFER_SIZE 256
 #define MIDI_PITCH_ZERO 8192
 
+USART_TypeDef* midi_uart;
 uint8_t status;
 uint8_t data[2];
 uint8_t midi_buffer[RING_BUFFER_SIZE];
