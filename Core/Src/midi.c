@@ -24,6 +24,7 @@ void init_midi(UART_HandleTypeDef* huart) {
 
 void process_midi_byte() {
 	uint8_t midi_in = midi_buffer[midi_buffer_read];
+	midi_buffer_read = (midi_buffer_read + 1) & (RING_BUFFER_SIZE - 1);
 	if ((midi_in & 0x80) == 0x80) {	//if byte received was status byte
 		status = midi_in;
 		data[0] = -1;
@@ -92,15 +93,18 @@ void process_midi_byte() {
 			break;
 		case 0xF0:												//system (unimplemented)
 			reset();
-			break;
 		default:
 			reset();
 		}
 	}
-	midi_buffer_read = (midi_buffer_read + 1) & (RING_BUFFER_SIZE - 1);
 }
 
 void reset() {
+	midi_uart->CR1 &= ~USART_CR1_RXNEIE;					//disable usart interrupt
+	while (midi_uart->SR & USART_SR_RXNE) {
+		midi_uart->DR;										//flush RDR usart buffer
+	}
+	midi_uart->CR1 |= USART_CR1_RXNEIE;						//re-enable usart interrupt
 	data[0] = -1;
 	data[1] = -1;
 	midi_buffer_read = 0;
@@ -139,4 +143,6 @@ void pitch_bend() {
 	for (uint8_t op_index = 0; op_index < MAX_OPERATORS; op_index++) {
 		op_pitch_bend[op_index] = (op_ratio[op_index] * pitch) >> 4;
 	}
+	data[0] = -1;
+	data[1] = -1;
 }

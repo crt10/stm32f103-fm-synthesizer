@@ -161,15 +161,15 @@ const INSTRUMENT instruments[MAX_INSTRUMENTS] = {
 				0x00
 		},
 		{
-				"Electric Piano  ",
-				{MAX_VOLUME, MAX_VOLUME, MAX_VOLUME, MAX_VOLUME},
-				{0x10, 0x10, 0x10, 0x10},
-				{0x00, 0x00, 0x00, 0x00},
-				{ENV_MAX_RATE, ENV_MAX_RATE, ENV_MAX_RATE, ENV_MAX_RATE},
-				{ENV_MAX_RATE, ENV_MAX_RATE, ENV_MAX_RATE, ENV_MAX_RATE},
-				{MAX_VOLUME, MAX_VOLUME, MAX_VOLUME, MAX_VOLUME},
-				{ENV_MAX_RATE, ENV_MAX_RATE, ENV_MAX_RATE, ENV_MAX_RATE},
-				0x00
+				"TEST INSTR      ",
+				{128, 96, 104, 80},
+				{0x08, 0x20, 0x18, 0x08},
+				{1, 2, 0, -4},
+				{124, 124, 126, 128},
+				{64, 128, 128, 128},
+				{96, 128, 128, 128},
+				{120, 128, 126, 128},
+				7
 		}
 };
 

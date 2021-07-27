@@ -442,13 +442,14 @@ void midi_read() {
 	uint8_t midi_uart_stat = midi_uart->SR;
 	if ((midi_uart_stat & USART_SR_PE) |
 		(midi_uart_stat & USART_SR_FE) |
+		(midi_uart_stat & USART_SR_NE) |
 		(midi_uart_stat & USART_SR_LBD)) {
 		midi_uart->DR;
 		reset();
 		return;
 	}
 	midi_buffer[midi_buffer_write] = midi_uart->DR;
-	++midi_buffer_write;
+	midi_buffer_write = (midi_buffer_write + 1) & (RING_BUFFER_SIZE - 1);
 }
 
 void sample() {

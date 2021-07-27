@@ -11,7 +11,7 @@
 #include "stm32f1xx_hal.h"
 #include "synth.h"
 
-#define RING_BUFFER_SIZE 256
+#define RING_BUFFER_SIZE 128
 #define MIDI_PITCH_ZERO 8192
 
 USART_TypeDef* midi_uart;
