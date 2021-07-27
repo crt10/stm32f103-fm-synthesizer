@@ -58,19 +58,14 @@ void add_voice(uint8_t note_value) {
 			voice_index = released_voice;
 		}
 	}
+	uint16_t carrier_freq = note_to_freq(note_value);
+	uint16_t carrier_delta = calculate_delta(carrier_freq);
 	for (uint8_t op_index = 0; op_index < MAX_OPERATORS; op_index++) {
 		op[op_index][voice_index].note_value = note_value;										//store note
 		op[op_index][voice_index].phase = 0;													//reset the phase (wave table index)
-		op[op_index][voice_index].freq = (op_ratio[op_index] * note_to_freq(note_value)) >> 4;	//calculate and store frequency (>> 4 for integer)
-		if (op_index != 0)	{
-			op[op_index][voice_index].delta = (op_ratio[op_index] * 								//multiply delta based off of ratio of carrier
-				(op[0][voice_index].delta - (int16_t)op_detune[op_index])) >> 4;
-			op[op_index][voice_index].delta += (int16_t)op_detune[op_index];						//offset with detune param
-		}
-		else {
-			op[op_index][voice_index].delta = calculate_delta(op[0][voice_index].freq);				//calculate and store delta
-			op[op_index][voice_index].delta += (int16_t)op_detune[op_index];						//offset with detune param
-		}
+		op[op_index][voice_index].freq = (op_ratio[op_index] * carrier_freq) >> 4;				//calculate and store frequency (>> 4 for integer)
+		op[op_index][voice_index].delta = (op_ratio[op_index] * carrier_delta) >> 4;			//multiply delta based off of ratio of carrier
+		op[op_index][voice_index].delta += (int16_t)op_detune[op_index];						//offset with detune param
 		op[op_index][voice_index].volume = 0x00;												//reset volume to 0
 		op[op_index][voice_index].env_amp = op_attack_inc[op_index];							//start envelope amp with attack increment
 		if (op_attack_inc[op_index] == MAX_VOLUME << 8) {										//if attack rate is max
