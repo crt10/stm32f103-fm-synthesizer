@@ -89,10 +89,8 @@ const transition set_algo_transitions[] = {
 };
 const transition set_instr_transitions[] = {
 	{pb_0				, menu_instr		, select_menu_instr		},
-	{pb_1				, set_instr			, temp_set_instr		},
-	{pb_2				, set_instr			, change_inc_dec		},
-	{rot_inc			, set_instr			, inc_set_instr			},
-	{rot_dec			, set_instr			, dec_set_instr			},
+	{pb_1				, set_instr			, dec_set_instr			},
+	{pb_2				, set_instr			, inc_set_instr			},
 	{invalid			, set_instr			, input_invalid			}
 };
 const transition* fsm_transition_table[NUM_OF_STATES] = {
@@ -121,6 +119,8 @@ const uint8_t ui_menu_instr[DISPLAY_MAX_PHYSICAL_LENGTH] = "algo ~instr amp ";
 const uint8_t ui_set[DISPLAY_MAX_PHYSICAL_LENGTH] = "OP1 OP2 OP3 OP4 ";
 const uint8_t ui_set_algo[DISPLAY_MAX_PHYSICAL_LENGTH] = "SELECT ALGO:    ";
 const uint8_t ui_set_env[DISPLAY_MAX_PHYSICAL_LENGTH] = "ATK DEC SUS REL ";
+const uint8_t ui_set_instr[DISPLAY_MAX_PHYSICAL_LENGTH] = "SELECT INSTR:   ";
+
 const uint8_t* ui_string_table[NUM_OF_UI_STRINGS] = {
 	ui_menu_amp,
 	ui_menu_ratio,
@@ -131,7 +131,8 @@ const uint8_t* ui_string_table[NUM_OF_UI_STRINGS] = {
 	ui_menu_instr,
 	ui_set,
 	ui_set_algo,
-	ui_set_env
+	ui_set_env,
+	ui_set_instr
 };
 uint8_t* ui_string_table_converted[NUM_OF_UI_STRINGS] = {
 	ui_menu_amp_converted,
@@ -143,7 +144,33 @@ uint8_t* ui_string_table_converted[NUM_OF_UI_STRINGS] = {
 	ui_menu_instr_converted,
 	ui_set_converted,
 	ui_set_algo_converted,
-	ui_set_env_converted
+	ui_set_env_converted,
+	ui_set_instr_converted
+};
+
+const INSTRUMENT instruments[MAX_INSTRUMENTS] = {
+		{
+				"Default         ",
+				{MAX_VOLUME, MAX_VOLUME, MAX_VOLUME, MAX_VOLUME},
+				{0x10, 0x10, 0x10, 0x10},
+				{0x00, 0x00, 0x00, 0x00},
+				{ENV_MAX_RATE, ENV_MAX_RATE, ENV_MAX_RATE, ENV_MAX_RATE},
+				{ENV_MAX_RATE, ENV_MAX_RATE, ENV_MAX_RATE, ENV_MAX_RATE},
+				{MAX_VOLUME, MAX_VOLUME, MAX_VOLUME, MAX_VOLUME},
+				{ENV_MAX_RATE, ENV_MAX_RATE, ENV_MAX_RATE, ENV_MAX_RATE},
+				0x00
+		},
+		{
+				"Electric Piano  ",
+				{MAX_VOLUME, MAX_VOLUME, MAX_VOLUME, MAX_VOLUME},
+				{0x10, 0x10, 0x10, 0x10},
+				{0x00, 0x00, 0x00, 0x00},
+				{ENV_MAX_RATE, ENV_MAX_RATE, ENV_MAX_RATE, ENV_MAX_RATE},
+				{ENV_MAX_RATE, ENV_MAX_RATE, ENV_MAX_RATE, ENV_MAX_RATE},
+				{MAX_VOLUME, MAX_VOLUME, MAX_VOLUME, MAX_VOLUME},
+				{ENV_MAX_RATE, ENV_MAX_RATE, ENV_MAX_RATE, ENV_MAX_RATE},
+				0x00
+		}
 };
 
 void init_ui(I2C_HandleTypeDef* hi2c) {
@@ -256,7 +283,7 @@ void enter_menu_algo() {
 }
 
 void enter_menu_instr() {
-
+	display_update_menu_instr();
 }
 
 void inc_menu_env_op() {
@@ -343,7 +370,23 @@ void inc_set_algo() {
 }
 
 void inc_set_instr() {
-
+	if (++instrument == MAX_INSTRUMENTS) {
+		instrument = 0x00;
+	}
+	for (uint8_t i = 0; i < MAX_OPERATORS; i++) {
+		algo = instruments[instrument].algo;
+		op_amp[i] = instruments[instrument].amp[i];
+		op_ratio[i] = instruments[instrument].ratio[i];
+		op_detune[i] = instruments[instrument].detune[i];
+		op_attack[i] = instruments[instrument].attack[i];
+		op_decay[i] = instruments[instrument].decay[i];
+		op_sustain[i] = instruments[instrument].sustain[i];
+		op_release[i] = instruments[instrument].release[i];
+		op_attack_inc[i] = calculate_env_inc(op_attack[i]);
+		op_decay_inc[i] = calculate_env_inc(op_decay[i]);
+		op_release_inc[i] = calculate_env_inc(op_release[i]);
+	}
+	display_update_menu_instr();
 }
 
 void dec_set_amp() {
@@ -416,7 +459,26 @@ void dec_set_env() {
 }
 
 void dec_set_instr() {
-
+	if (instrument == 0x00) {
+		instrument = (MAX_INSTRUMENTS-1);
+	}
+	else {
+		--instrument;
+	}
+	for (uint8_t i = 0; i < MAX_OPERATORS; i++) {
+		algo = instruments[instrument].algo;
+		op_amp[i] = instruments[instrument].amp[i];
+		op_ratio[i] = instruments[instrument].ratio[i];
+		op_detune[i] = instruments[instrument].detune[i];
+		op_attack[i] = instruments[instrument].attack[i];
+		op_decay[i] = instruments[instrument].decay[i];
+		op_sustain[i] = instruments[instrument].sustain[i];
+		op_release[i] = instruments[instrument].release[i];
+		op_attack_inc[i] = calculate_env_inc(op_attack[i]);
+		op_decay_inc[i] = calculate_env_inc(op_decay[i]);
+		op_release_inc[i] = calculate_env_inc(op_release[i]);
+	}
+	display_update_menu_instr();
 }
 
 void temp_set_amp() {
@@ -563,5 +625,18 @@ void display_update_menu_algo() {
 }
 
 void display_update_menu_instr() {
+	uint8_t index = SECOND_LINE_START_INDEX - (4*6);	//index set on first line, 15th position
+	display_convert_data(
+		*HEX_TO_STRING[instrument], ui_set_instr_converted, &index
+	);
 
+	char params[DISPLAY_MAX_PHYSICAL_LENGTH+1] = "";
+	strcat(params, instruments[instrument].name);
+	index = SECOND_LINE_START_INDEX;
+	for (uint8_t i = 0; i < DISPLAY_MAX_PHYSICAL_LENGTH; i++) {
+		display_convert_data(
+			params[i], ui_set_instr_converted, &index
+		);
+	}
+	display_i2c_dma_write(ui_set_instr_converted, UI_STRING_CONVERTED_SIZE);
 }

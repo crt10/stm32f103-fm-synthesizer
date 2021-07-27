@@ -13,16 +13,17 @@
 #include "ui.h"
 #include "synth.h"
 
-#define NUM_OF_STATES 13
+#define NUM_OF_STATES 14
 #define MAX_PARAMS 4
-#define NUM_OF_UI_STRINGS 12
+#define NUM_OF_UI_STRINGS 11
 /* NOTE: 6 is the number of messages needed in order to send 1 data/cmd to the LCD
  * In order to send 1 character, we send 6 messages, hence the *6.
- * 2 cmds are neede to update the DDRAM address, hence the (2*6). */
+ * 2 cmds are needed to update the DDRAM address, hence the (2*6). */
 #define UI_STRING_CONVERTED_SIZE DISPLAY_MAX_LINES*DISPLAY_MAX_PHYSICAL_LENGTH*6 + (2*6)
 #define SECOND_LINE_START_INDEX DISPLAY_MAX_PHYSICAL_LENGTH*6 + (2*6)
 #define INC_DEC_DEFAULT 0x01
 #define INC_DEC_ALT 0x08
+#define MAX_INSTRUMENTS 2
 
 typedef void (* transition_fn) ();
 typedef enum {
@@ -39,6 +40,18 @@ typedef struct {
 	state next_state;
 	transition_fn transition_task;
 } transition;
+
+typedef struct INSTRUMENT {
+	char* name;						//name must be of size DISPLAY_MAX_PHYSICAL_LENGTH
+	uint8_t amp[MAX_OPERATORS];
+	uint8_t ratio[MAX_OPERATORS];
+	int8_t detune[MAX_OPERATORS];
+	uint8_t attack[MAX_OPERATORS];
+	uint8_t decay[MAX_OPERATORS];
+	uint8_t sustain[MAX_OPERATORS];
+	uint8_t release[MAX_OPERATORS];
+	uint8_t algo;
+} INSTRUMENT;
 
 /*transition state functions*/
 void input_invalid();
@@ -78,7 +91,6 @@ void temp_set_ratio();
 void temp_set_detune();
 void temp_set_env();
 void temp_set_algo();
-void temp_set_instr();
 
 extern const transition menu_amp_transitions[];
 extern const transition menu_ratio_transitions[];
@@ -105,6 +117,7 @@ extern const uint8_t ui_menu_instr[DISPLAY_MAX_PHYSICAL_LENGTH];
 extern const uint8_t ui_set[DISPLAY_MAX_PHYSICAL_LENGTH];
 extern const uint8_t ui_set_algo[DISPLAY_MAX_PHYSICAL_LENGTH];
 extern const uint8_t ui_set_env[DISPLAY_MAX_PHYSICAL_LENGTH];
+extern const uint8_t ui_set_instr[DISPLAY_MAX_PHYSICAL_LENGTH];
 extern const uint8_t* ui_string_table[NUM_OF_UI_STRINGS];
 uint8_t ui_menu_amp_converted[UI_STRING_CONVERTED_SIZE];
 uint8_t ui_menu_ratio_converted[UI_STRING_CONVERTED_SIZE];
@@ -116,13 +129,17 @@ uint8_t ui_menu_env_op_converted[UI_STRING_CONVERTED_SIZE];
 uint8_t ui_set_converted[UI_STRING_CONVERTED_SIZE];
 uint8_t ui_set_algo_converted[UI_STRING_CONVERTED_SIZE];
 uint8_t ui_set_env_converted[UI_STRING_CONVERTED_SIZE];
+uint8_t ui_set_instr_converted[UI_STRING_CONVERTED_SIZE];
 uint8_t* ui_string_table_converted[NUM_OF_UI_STRINGS];
+
+extern const INSTRUMENT instruments[MAX_INSTRUMENTS];
 
 state present_state;
 uint8_t fsm_op;
 uint8_t fsm_env_op;
 uint8_t inc_dec;
 uint8_t temp[MAX_PARAMS];
+uint8_t instrument;
 
 void init_ui(I2C_HandleTypeDef* hi2c);
 void fsm(input key);

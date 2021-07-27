@@ -48,6 +48,7 @@ uint16_t op_attack_inc[MAX_OPERATORS];	//attack rate converted to increments (8 
 uint16_t op_decay_inc[MAX_OPERATORS];	//decay rate converted to increments (8 MSB integer, 8 LSB decimal)
 uint16_t op_release_inc[MAX_OPERATORS];	//release rate converted to increments (8 MSB integer, 8 LSB decimal)
 uint8_t algo;
+uint8_t instrument;
 
 void init_synth();
 void clear_voices();
