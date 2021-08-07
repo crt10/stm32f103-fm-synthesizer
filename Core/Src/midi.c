@@ -29,6 +29,9 @@ void process_midi_byte() {
 		status = midi_in;
 		data[0] = -1;
 		data[1] = -1;
+		if ((midi_in & 0x0F) != 0x00) {	//if status byte was for different channel, reset
+			reset();
+		}
 	}
 	else {													//if byte received was data byte
 		switch (status & 0xF0) {

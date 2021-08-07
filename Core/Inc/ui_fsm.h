@@ -23,7 +23,7 @@
 #define SECOND_LINE_START_INDEX DISPLAY_MAX_PHYSICAL_LENGTH*6 + (2*6)
 #define INC_DEC_DEFAULT 0x01
 #define INC_DEC_ALT 0x08
-#define MAX_INSTRUMENTS 2
+#define MAX_INSTRUMENTS 5
 
 typedef void (* transition_fn) ();
 typedef enum {
